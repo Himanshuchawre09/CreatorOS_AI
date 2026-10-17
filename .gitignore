@@ -1,0 +1,46 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Node dependencies & builds
+node_modules/
+dist/
+dist-ssr/
+build/
+*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Legacy project ignores
+.venv/
+__pycache__/
+*.pt
+data/splits/
+data/clean_raw/
+data/HAM10000_images_part_1/
+data/HAM10000_images_part_2/
+data/adversarial_test/
+hmnist_28_28_L.csv
+hmnist_28_28_RGB.csv
+hmnist_8_8_L.csv
+hmnist_8_8_RGB.csv
+runs/*/best_model.pt
