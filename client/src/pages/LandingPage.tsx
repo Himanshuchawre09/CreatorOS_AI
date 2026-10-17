@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import {
   Sparkles,
   ArrowRight,
-  ShieldCheck,
   Zap,
   FileCheck2,
   Users2,
@@ -11,15 +10,17 @@ import {
   Layers,
   Check,
   CheckCircle2,
-  Lock,
   Workflow,
   Search,
   Bot,
-  ExternalLink,
+  GitPullRequest,
+  Clock,
+  Calendar,
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Card, CardContent } from '../components/ui/Card';
+import { Avatar } from '../components/ui/Avatar';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { Tabs, TabsList, TabTrigger, TabContent } from '../components/ui/Tabs';
 
@@ -31,7 +32,10 @@ export const LandingPage: React.FC = () => {
       {/* Navigation Header */}
       <nav className="sticky top-0 z-40 w-full border-b border-surface-200/80 dark:border-surface-800/80 bg-white/80 dark:bg-surface-950/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5">
+          <Link
+            to="/"
+            className="flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg p-1"
+          >
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-500 to-accent-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
               <Layers className="w-5 h-5" />
             </div>
@@ -46,24 +50,36 @@ export const LandingPage: React.FC = () => {
           </Link>
 
           {/* Center Links */}
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-surface-600 dark:text-surface-300">
-            <a href="#features" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
+          <div className="hidden md:flex items-center gap-6 text-sm font-medium text-surface-600 dark:text-surface-300">
+            <a
+              href="#features"
+              className="px-2 py-1 rounded-md hover:text-brand-600 dark:hover:text-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-colors"
+            >
               Platform
             </a>
-            <a href="#workflow" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
+            <a
+              href="#workflow"
+              className="px-2 py-1 rounded-md hover:text-brand-600 dark:hover:text-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-colors"
+            >
               Workflow
             </a>
-            <a href="#roles" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
+            <a
+              href="#roles"
+              className="px-2 py-1 rounded-md hover:text-brand-600 dark:hover:text-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-colors"
+            >
               Solutions
             </a>
-            <a href="#ai-intelligence" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors flex items-center gap-1.5">
+            <a
+              href="#ai-intelligence"
+              className="px-2 py-1 rounded-md hover:text-brand-600 dark:hover:text-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-colors flex items-center gap-1.5"
+            >
               <span>AI Intelligence</span>
               <span className="w-1.5 h-1.5 rounded-full bg-accent-500" />
             </a>
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <ThemeToggle />
             <Link to="/login">
               <Button variant="ghost" size="sm">
@@ -80,28 +96,33 @@ export const LandingPage: React.FC = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-16 pb-24 md:pt-24 md:pb-32 overflow-hidden">
-        {/* Ambient Gradient Glows */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-brand-500/10 dark:bg-brand-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/3 left-1/3 w-[350px] h-[350px] bg-accent-500/10 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative pt-14 pb-20 md:pt-20 md:pb-28 overflow-hidden">
+        {/* Subtle Ambient Glows */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[320px] bg-brand-500/10 dark:bg-brand-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 left-1/3 w-[300px] h-[300px] bg-accent-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 dark:bg-brand-950/80 border border-brand-200 dark:border-brand-800 text-brand-700 dark:text-brand-300 text-xs font-semibold mb-6 animate-in fade-in">
+          {/* Concrete Short Badge */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 dark:bg-brand-950/80 border border-brand-200 dark:border-brand-800 text-brand-700 dark:text-brand-300 text-xs font-semibold mb-6">
             <Sparkles className="w-3.5 h-3.5 text-accent-500" />
-            <span>Next-Generation Creator & Brand Collaboration Infrastructure</span>
+            <span>Creator & Brand Collaboration Platform</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-surface-900 dark:text-surface-50 leading-[1.1] max-w-4xl mx-auto">
-            Where Modern Creators and Brands{' '}
-            <span className="bg-gradient-to-r from-brand-600 via-brand-500 to-accent-500 bg-clip-text text-transparent">
-              Align, Deliver, and Scale.
-            </span>
+          {/* Hero Heading: font-size clamp, looser letter-spacing, text-wrap balance, final period attached */}
+          <h1
+            className="font-extrabold tracking-normal text-surface-900 dark:text-surface-50 leading-[1.12] max-w-4xl mx-auto"
+            style={{
+              fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
+              letterSpacing: '0.015em',
+              textWrap: 'balance',
+            }}
+          >
+            Where creators and brands align, deliver, and collaborate seamlessly.
           </h1>
 
-          <p className="mt-6 text-lg sm:text-xl text-surface-600 dark:text-surface-300 max-w-2xl mx-auto leading-relaxed">
-            Eliminate fragmented DMs, ambiguous scopes, and delayed payouts. CreatorOS AI provides
-            structured campaign briefs, verified deliverables, automated milestone protection, and
-            actionable workflow intelligence.
+          {/* Plain language subtext */}
+          <p className="mt-6 text-base sm:text-lg md:text-xl text-surface-600 dark:text-surface-300 max-w-3xl mx-auto leading-relaxed">
+            One workspace for campaigns, collaboration requests, contracts, tasks, content approval, and AI help.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
@@ -112,77 +133,163 @@ export const LandingPage: React.FC = () => {
             </Link>
             <Link to="/dashboard" className="w-full sm:w-auto">
               <Button size="lg" variant="outline" className="w-full sm:w-auto text-base px-6">
-                Explore Live Dashboard
+                View Demo Dashboard
               </Button>
             </Link>
           </div>
 
-          <div className="mt-8 flex items-center justify-center gap-6 text-xs text-surface-500 dark:text-surface-400">
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-6 text-xs text-surface-500 dark:text-surface-400">
             <span className="flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" /> Milestone Protection
+              <FileCheck2 className="w-4 h-4 text-brand-500" /> Standardized Briefs
             </span>
             <span className="flex items-center gap-1.5">
-              <Zap className="w-4 h-4 text-brand-500" /> Real-Time Asset Reviews
+              <Zap className="w-4 h-4 text-emerald-500" /> Real-Time Asset Feedback
             </span>
             <span className="flex items-center gap-1.5">
-              <Lock className="w-4 h-4 text-accent-500" /> Enterprise-Grade Privacy
+              <CheckCircle2 className="w-4 h-4 text-accent-500" /> Invoice Status Tracking
             </span>
           </div>
 
-          {/* Interactive Visual Dashboard Preview Card */}
-          <div className="mt-14 max-w-5xl mx-auto rounded-2xl border border-surface-200 dark:border-surface-800 bg-surface-100/60 dark:bg-surface-900/60 p-2 sm:p-4 shadow-2xl backdrop-blur-xl">
-            <div className="rounded-xl border border-surface-200/90 dark:border-surface-800 bg-white dark:bg-surface-950 overflow-hidden shadow-inner text-left">
-              {/* Window bar */}
-              <div className="px-4 py-3 border-b border-surface-200 dark:border-surface-800 flex items-center justify-between bg-surface-50 dark:bg-surface-900/50">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-rose-400/80" />
-                  <div className="w-3 h-3 rounded-full bg-amber-400/80" />
-                  <div className="w-3 h-3 rounded-full bg-emerald-400/80" />
-                  <span className="text-xs text-surface-400 dark:text-surface-500 font-mono ml-2">
-                    creatoros.ai/app/campaigns/active
-                  </span>
-                </div>
-                <Badge variant="brand" size="sm">
-                  Active Collaboration
-                </Badge>
-              </div>
+          {/* Product Preview Browser Frame */}
+          <div className="mt-12 max-w-5xl mx-auto">
+            <div className="text-left mb-2 flex items-center justify-between px-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-surface-400">
+                Product preview
+              </span>
+              <span className="text-[11px] text-surface-400 font-mono">
+                Interactive preview
+              </span>
+            </div>
 
-              {/* Mockup content */}
-              <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 rounded-xl border border-surface-100 dark:border-surface-850 bg-surface-50/50 dark:bg-surface-900/40">
-                  <span className="text-xs font-semibold text-surface-500">Active Campaign</span>
-                  <p className="text-sm font-bold text-surface-900 dark:text-surface-100 mt-1">
-                    Nordic Audio Fall Product Launch
-                  </p>
-                  <div className="mt-3 flex items-center justify-between text-xs">
-                    <span className="text-surface-400">Deliverables</span>
-                    <span className="font-semibold text-brand-600 dark:text-brand-400">3 of 4 Approved</span>
+            <div className="rounded-2xl border border-surface-200 dark:border-surface-800 bg-surface-100/60 dark:bg-surface-900/60 p-2 sm:p-4 shadow-card hover:shadow-glow transition-all duration-300">
+              <div className="rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-950 overflow-hidden text-left shadow-inner">
+                {/* Browser window chrome */}
+                <div className="px-4 py-3 border-b border-surface-200 dark:border-surface-800 flex items-center justify-between bg-surface-50 dark:bg-surface-900/60">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-rose-400/80" />
+                    <div className="w-3 h-3 rounded-full bg-amber-400/80" />
+                    <div className="w-3 h-3 rounded-full bg-emerald-400/80" />
+                    <span className="text-xs text-surface-400 dark:text-surface-500 font-mono ml-2">
+                      app.creatoros.ai/campaigns/active
+                    </span>
                   </div>
-                  <div className="w-full bg-surface-200 dark:bg-surface-800 h-1.5 rounded-full mt-1.5 overflow-hidden">
-                    <div className="bg-brand-600 h-full w-3/4 rounded-full" />
+                  <Badge variant="neutral" size="sm">
+                    Campaign Workspace
+                  </Badge>
+                </div>
+
+                {/* Browser preview contents: Campaign Card, Collaboration-Request Card, AI Match Card */}
+                <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Card 1: Active Campaign Card */}
+                  <div className="rounded-xl border border-surface-200 dark:border-surface-800 p-4 bg-surface-50/50 dark:bg-surface-900/40 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-surface-500 font-medium">Campaign</span>
+                        <Badge variant="warning" size="sm">
+                          In Review
+                        </Badge>
+                      </div>
+                      <h4 className="text-sm font-bold text-surface-900 dark:text-surface-100 mt-2">
+                        Nordic Audio Fall Launch
+                      </h4>
+                      <p className="text-xs text-surface-500 mt-1">
+                        YouTube 60s Integration + X Post
+                      </p>
+
+                      <div className="mt-4 space-y-2">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-surface-400">Deliverables</span>
+                          <span className="font-semibold text-surface-700 dark:text-surface-300">3 of 4 Submitted</span>
+                        </div>
+                        <div className="w-full bg-surface-200 dark:bg-surface-800 h-1.5 rounded-full overflow-hidden">
+                          <div className="bg-brand-600 h-full w-3/4 rounded-full" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-surface-200 dark:border-surface-800 flex items-center justify-between text-xs">
+                      <span className="text-surface-400 flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5" /> Due Oct 24
+                      </span>
+                      <span className="font-bold text-surface-900 dark:text-surface-100">$3,200 Budget</span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="p-4 rounded-xl border border-surface-100 dark:border-surface-850 bg-surface-50/50 dark:bg-surface-900/40">
-                  <span className="text-xs font-semibold text-surface-500">Escrow Milestone</span>
-                  <p className="text-sm font-bold text-surface-900 dark:text-surface-100 mt-1">
-                    $4,500.00 USD
-                  </p>
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-3 flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Locked in Milestone Escrow
-                  </p>
-                </div>
+                  {/* Card 2: Collaboration Request Card */}
+                  <div className="rounded-xl border border-surface-200 dark:border-surface-800 p-4 bg-surface-50/50 dark:bg-surface-900/40 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-surface-500 font-medium flex items-center gap-1.5">
+                          <GitPullRequest className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
+                          Collaboration Request
+                        </span>
+                        <Badge variant="brand" size="sm">
+                          New Request
+                        </Badge>
+                      </div>
 
-                <div className="p-4 rounded-xl border border-brand-200 dark:border-brand-900 bg-brand-50/30 dark:bg-brand-950/20">
-                  <span className="text-xs font-semibold text-brand-600 dark:text-brand-400 flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5" /> AI Contract Review
-                  </span>
-                  <p className="text-xs font-semibold text-surface-900 dark:text-surface-100 mt-1">
-                    Standard Usage Rights Verified
-                  </p>
-                  <p className="text-[11px] text-surface-500 mt-1">
-                    No perpetual rights detected. 60-day digital distribution window approved.
-                  </p>
+                      <div className="mt-2.5 flex items-center gap-2.5">
+                        <Avatar name="Prism Keyboards" size="sm" />
+                        <div>
+                          <p className="text-xs font-bold text-surface-900 dark:text-surface-100">
+                            Prism Keyboards
+                          </p>
+                          <span className="text-[10px] text-surface-400">Brand Partner</span>
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-surface-600 dark:text-surface-400 mt-2.5 leading-relaxed">
+                        &quot;We loved your desk setup series. Would you be open to showcasing our wireless mechanical keyboard in November?&quot;
+                      </p>
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-surface-200 dark:border-surface-800 flex items-center gap-2">
+                      <Button variant="primary" size="sm" className="w-full text-xs py-1.5">
+                        Accept Request
+                      </Button>
+                      <Button variant="outline" size="sm" className="w-full text-xs py-1.5">
+                        View Terms
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Card 3: AI Match & Contract Card */}
+                  <div className="rounded-xl border border-brand-200 dark:border-brand-900/70 p-4 bg-brand-50/30 dark:bg-brand-950/20 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-brand-600 dark:text-brand-400 font-semibold flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5" /> AI Match & Scope
+                        </span>
+                        <Badge variant="accent" size="sm">
+                          Terms Verified
+                        </Badge>
+                      </div>
+
+                      <h4 className="text-xs font-bold text-surface-900 dark:text-surface-100 mt-2.5">
+                        Agreement Terms Analysis
+                      </h4>
+
+                      <ul className="mt-2 space-y-1.5 text-[11px] text-surface-600 dark:text-surface-400 leading-tight">
+                        <li className="flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                          <span>No perpetual usage rights detected</span>
+                        </li>
+                        <li className="flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                          <span>60-day digital distribution window</span>
+                        </li>
+                        <li className="flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                          <span>Maximum 2 revision cycles specified</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="mt-4 pt-3 border-t border-brand-100 dark:border-brand-900/50 flex items-center justify-between text-xs text-surface-500">
+                      <span>Rate benchmark:</span>
+                      <span className="font-semibold text-brand-600 dark:text-brand-400">Within typical range</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -195,14 +302,14 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">
-              Platform Features
+              Platform Modules
             </h2>
-            <p className="mt-2 text-3xl font-extrabold text-surface-900 dark:text-surface-50 sm:text-4xl">
-              Engineered for Real-World Creator Operations
+            <p className="mt-2 text-3xl font-extrabold text-surface-900 dark:text-surface-50 sm:text-4xl tracking-tight">
+              A Complete Workspace for Creator Partnerships
             </p>
             <p className="mt-4 text-base text-surface-600 dark:text-surface-400">
-              Replace disorganized email threads, PDF contracts, and spreadsheet trackers with an
-              integrated system built specifically for brand partnerships.
+              Organize campaigns, collaboration requests, contracts, revisions, and invoices without
+              relying on disconnected chat apps or messy spreadsheets.
             </p>
           </div>
 
@@ -213,11 +320,11 @@ export const LandingPage: React.FC = () => {
                   <FileCheck2 className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">
-                  Structured Briefs & Contracts
+                  Standardized Briefs & Contracts
                 </h3>
                 <p className="text-sm text-surface-600 dark:text-surface-400 mt-2 leading-relaxed">
-                  Turn vague messages into explicit campaign agreements with defined deliverables,
-                  licensing periods, revision limits, and exact deadlines.
+                  Turn informal conversations into structured agreements specifying exact deliverables,
+                  licensing periods, revision limits, and deadlines.
                 </p>
               </CardContent>
             </Card>
@@ -225,14 +332,14 @@ export const LandingPage: React.FC = () => {
             <Card hover>
               <CardContent className="p-6">
                 <div className="w-12 h-12 rounded-xl bg-accent-50 dark:bg-accent-950/80 text-accent-600 dark:text-accent-400 flex items-center justify-center mb-5">
-                  <ShieldCheck className="w-6 h-6" />
+                  <Users2 className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">
-                  Milestone Escrow Protection
+                  Collaboration Requests & Pipeline
                 </h3>
                 <p className="text-sm text-surface-600 dark:text-surface-400 mt-2 leading-relaxed">
-                  Brands fund milestones upfront to confirm budget commitment, while creators
-                  receive guaranteed prompt payouts upon deliverable sign-off.
+                  Receive inbound brand requests, negotiate terms in one central feed, and transition
+                  accepted proposals straight into active campaign workflows.
                 </p>
               </CardContent>
             </Card>
@@ -240,14 +347,14 @@ export const LandingPage: React.FC = () => {
             <Card hover>
               <CardContent className="p-6">
                 <div className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-5">
-                  <Users2 className="w-6 h-6" />
+                  <Workflow className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">
                   Deliverables Review Hub
                 </h3>
                 <p className="text-sm text-surface-600 dark:text-surface-400 mt-2 leading-relaxed">
-                  Submit video cuts, copy drafts, and social assets directly into dedicated revision
-                  threads with timestamped review markers.
+                  Submit video cuts, copy drafts, and social assets directly to brand reviewers with
+                  clear version history and structured feedback threads.
                 </p>
               </CardContent>
             </Card>
@@ -261,8 +368,8 @@ export const LandingPage: React.FC = () => {
                   AI Workflow Assistant
                 </h3>
                 <p className="text-sm text-surface-600 dark:text-surface-400 mt-2 leading-relaxed">
-                  Analyze legal clauses for predatory terms, generate standard creative briefs, and
-                  predict timeline bottlenecks before they happen.
+                  Review contract clauses for common pitfalls, generate comprehensive creative briefs,
+                  and ensure deliverables meet compliance standards.
                 </p>
               </CardContent>
             </Card>
@@ -270,14 +377,14 @@ export const LandingPage: React.FC = () => {
             <Card hover>
               <CardContent className="p-6">
                 <div className="w-12 h-12 rounded-xl bg-cyan-50 dark:bg-cyan-950/80 text-cyan-600 dark:text-cyan-400 flex items-center justify-center mb-5">
-                  <Workflow className="w-6 h-6" />
+                  <Clock className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">
-                  Multi-Channel Pipeline
+                  Invoice & Payment Status Tracking
                 </h3>
                 <p className="text-sm text-surface-600 dark:text-surface-400 mt-2 leading-relaxed">
-                  Track YouTube integrations, Instagram Reels, TikTok packages, and newsletter
-                  features across every stage of production in a single view.
+                  Track invoices from draft to sent, review, and settled. Keep an accurate record of
+                  completed work and outstanding balances across all partners.
                 </p>
               </CardContent>
             </Card>
@@ -291,8 +398,8 @@ export const LandingPage: React.FC = () => {
                   Role-Tailored Workspaces
                 </h3>
                 <p className="text-sm text-surface-600 dark:text-surface-400 mt-2 leading-relaxed">
-                  Distinct interfaces and permissions whether you are an individual solo creator,
-                  in-house brand marketer, talent manager, or agency team.
+                  Dedicated interfaces tailored for Creators, In-House Brands, Freelancers, and Talent
+                  Managers to collaborate with clarity.
                 </p>
               </CardContent>
             </Card>
@@ -305,13 +412,13 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-xs font-bold uppercase tracking-widest text-accent-500">
-              Clear Process
+              Clear Workflow
             </h2>
-            <p className="mt-2 text-3xl font-extrabold text-surface-900 dark:text-surface-50 sm:text-4xl">
-              How CreatorOS Works
+            <p className="mt-2 text-3xl font-extrabold text-surface-900 dark:text-surface-50 sm:text-4xl tracking-tight">
+              How Collaborations Move Forward
             </p>
             <p className="mt-4 text-base text-surface-600 dark:text-surface-400">
-              From the initial outreach to final deliverable sign-off, every step has dedicated structure.
+              From the initial proposal to final deliverable sign-off and invoice tracking.
             </p>
           </div>
 
@@ -319,28 +426,28 @@ export const LandingPage: React.FC = () => {
             {[
               {
                 step: '01',
-                title: 'Match & Scope',
-                desc: 'Define campaign objectives, required formats, target demographics, and delivery milestones.',
+                title: 'Request & Scope',
+                desc: 'Send or receive collaboration proposals with required formats, key dates, and target audiences.',
               },
               {
                 step: '02',
                 title: 'Brief & Contract',
-                desc: 'Generate clear agreements detailing usage rights, exclusivity restrictions, and payment schedules.',
+                desc: 'Establish clear agreements outlining creative guidelines, usage rights, and milestone deadlines.',
               },
               {
                 step: '03',
-                title: 'Collaborate & Review',
-                desc: 'Submit drafts and review creative assets with version tracking and consolidated feedback.',
+                title: 'Submit & Review',
+                desc: 'Upload drafts and review deliverables with timestamped revision requests and version control.',
               },
               {
                 step: '04',
-                title: 'Approve & Payout',
-                desc: 'Sign off on finished assets to automatically release escrow funds directly to creators without delay.',
+                title: 'Approve & Track Invoices',
+                desc: 'Sign off on finished assets and update invoice statuses to keep accounting transparent and timely.',
               },
             ].map((s) => (
               <div
                 key={s.step}
-                className="relative rounded-2xl p-6 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 flex flex-col justify-between"
+                className="relative rounded-2xl p-6 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 flex flex-col justify-between shadow-subtle"
               >
                 <div>
                   <span className="text-3xl font-black text-brand-600/30 dark:text-brand-400/20 font-mono">
@@ -354,7 +461,7 @@ export const LandingPage: React.FC = () => {
                   </p>
                 </div>
                 <div className="mt-6 flex items-center gap-1.5 text-xs font-semibold text-brand-600 dark:text-brand-400">
-                  <Check className="w-3.5 h-3.5" /> Stage Ready
+                  <Check className="w-3.5 h-3.5" /> Structured Milestone
                 </div>
               </div>
             ))}
@@ -367,14 +474,14 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">
-              Role Workspaces
+              Role Solutions
             </h2>
-            <p className="mt-2 text-3xl font-extrabold text-surface-900 dark:text-surface-50 sm:text-4xl">
-              Built for Every Side of the Collaboration
+            <p className="mt-2 text-3xl font-extrabold text-surface-900 dark:text-surface-50 sm:text-4xl tracking-tight">
+              Tailored for Every Collaboration Partner
             </p>
             <p className="mt-4 text-base text-surface-600 dark:text-surface-400">
-              Whether you are an independent creator producing content or a brand managing fifty
-              concurrent partnerships, CreatorOS provides the right toolkit.
+              Whether you are an independent creator producing content or a brand managing multiple
+              concurrent campaigns, CreatorOS organizes the full workflow.
             </p>
           </div>
 
@@ -397,22 +504,24 @@ export const LandingPage: React.FC = () => {
                         For Independent Creators
                       </Badge>
                       <h3 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
-                        Focus on creating, not chasing unpaid invoices.
+                        Spend more time creating, less time managing admin.
                       </h3>
                       <p className="text-sm text-surface-600 dark:text-surface-400 mt-3 leading-relaxed">
-                        Say goodbye to vague contracts and 90-day payment delays. CreatorOS provides
-                        you with verified briefs, milestone escrow, and automatic invoicing so your
-                        creative business runs predictably.
+                        Keep all brand briefs, deadlines, content approvals, and invoice records in
+                        one organized dashboard.
                       </p>
                       <ul className="mt-5 space-y-2 text-xs text-surface-700 dark:text-surface-300">
                         <li className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Guaranteed payout release upon deliverable approval
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                          <span>Structured campaign briefs with clear revision boundaries</span>
                         </li>
                         <li className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Contract clause scanner highlights perpetual rights risks
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                          <span>AI contract scanner flags perpetual rights and ambiguity</span>
                         </li>
                         <li className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Unified media kit link and partnership intake portal
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                          <span>Clear invoice tracking from sent to paid</span>
                         </li>
                       </ul>
                     </div>
@@ -421,10 +530,10 @@ export const LandingPage: React.FC = () => {
                         <span>Upcoming Deliverable</span>
                         <Badge variant="warning" size="sm">Due in 3 Days</Badge>
                       </div>
-                      <p className="text-sm font-bold">YouTube 60s Dedicated Segment: VPN Privacy</p>
-                      <p className="text-xs text-surface-500">Brief status: Script approved, rough cut submitted.</p>
+                      <p className="text-sm font-bold">YouTube 60s Integration: VPN Privacy</p>
+                      <p className="text-xs text-surface-500">Brief status: Script approved, rough cut under review.</p>
                       <div className="pt-2 border-t border-surface-200 dark:border-surface-800 flex justify-between text-xs">
-                        <span className="text-surface-500">Agreed Rate:</span>
+                        <span className="text-surface-500">Campaign Budget:</span>
                         <span className="font-bold text-surface-900 dark:text-surface-100">$3,200.00</span>
                       </div>
                     </div>
@@ -440,21 +549,24 @@ export const LandingPage: React.FC = () => {
                         For Marketing Teams & Brands
                       </Badge>
                       <h3 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
-                        Organize 100+ creator partnerships effortlessly.
+                        Run multiple creator partnerships with confidence.
                       </h3>
                       <p className="text-sm text-surface-600 dark:text-surface-400 mt-3 leading-relaxed">
-                        Centralize creator outreach, brief generation, licensing compliance, and ROI
-                        tracking. Avoid lost assets in slack channels or unreviewed deliverables.
+                        Centralize creator proposals, standardized briefs, asset reviews, and invoice
+                        status in one collaborative dashboard.
                       </p>
                       <ul className="mt-5 space-y-2 text-xs text-surface-700 dark:text-surface-300">
                         <li className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500" /> One-click standardized brief distribution
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                          <span>Standardized brief templates for consistent campaign output</span>
                         </li>
                         <li className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Automated compliance check for FTC disclosure tags
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                          <span>Consolidated asset feedback and revision logs</span>
                         </li>
                         <li className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Consolidated company billing and tax documentation
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                          <span>Centralized invoice and campaign budget tracking</span>
                         </li>
                       </ul>
                     </div>
@@ -463,11 +575,11 @@ export const LandingPage: React.FC = () => {
                         <span>Campaign Overview</span>
                         <Badge variant="success" size="sm">Q4 Holiday Push</Badge>
                       </div>
-                      <p className="text-sm font-bold">18 Creators Engaged • $42,500 Total Budget</p>
-                      <p className="text-xs text-surface-500">14 briefs signed, 8 first cuts under review.</p>
+                      <p className="text-sm font-bold">18 Creators Engaged • $42,500 Budget</p>
+                      <p className="text-xs text-surface-500">14 briefs signed, 8 rough cuts under review.</p>
                       <div className="pt-2 border-t border-surface-200 dark:border-surface-800 flex justify-between text-xs">
-                        <span className="text-surface-500">Escrow Balance:</span>
-                        <span className="font-bold text-surface-900 dark:text-surface-100">$42,500 Funded</span>
+                        <span className="text-surface-500">Invoice Status:</span>
+                        <span className="font-bold text-surface-900 dark:text-surface-100">6 Settled, 12 Pending</span>
                       </div>
                     </div>
                   </CardContent>
@@ -479,28 +591,30 @@ export const LandingPage: React.FC = () => {
                   <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                     <div>
                       <Badge variant="neutral" size="sm" className="mb-3">
-                        For Video Editors & Strategists
+                        For Editors & Strategists
                       </Badge>
                       <h3 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
                         The production layer for creator teams.
                       </h3>
                       <p className="text-sm text-surface-600 dark:text-surface-400 mt-3 leading-relaxed">
-                        Editors, copywriters, thumbnail artists, and production managers can easily
-                        plug into creator accounts to upload assets, mark revisions, and manage sub-deliverables.
+                        Editors, copywriters, and thumbnail artists can plug into creator workspaces
+                        to upload assets, mark revisions, and manage sub-deliverables.
                       </p>
                       <ul className="mt-5 space-y-2 text-xs text-surface-700 dark:text-surface-300">
                         <li className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Role-based permissions without sharing account credentials
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                          <span>Task delegation and asset handover workflows</span>
                         </li>
                         <li className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Direct file handover with timestamped client comments
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                          <span>Consolidated client comments on video revisions</span>
                         </li>
                       </ul>
                     </div>
                     <div className="rounded-xl border border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-900 p-6 space-y-3">
                       <div className="text-xs font-semibold text-surface-500">Sub-Task Assigned</div>
                       <p className="text-sm font-bold">Render final 4K cut with brand bumper logo</p>
-                      <p className="text-xs text-surface-500">Assigned by: Alex Morgan (Lead Creator)</p>
+                      <p className="text-xs text-surface-500">Assigned by: Alex Morgan (Creator)</p>
                       <Badge variant="brand" size="sm">Ready for Review</Badge>
                     </div>
                   </CardContent>
@@ -512,29 +626,31 @@ export const LandingPage: React.FC = () => {
                   <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                     <div>
                       <Badge variant="brand" size="sm" className="mb-3">
-                        For Talent Agencies & Representation
+                        For Talent Managers & Agencies
                       </Badge>
                       <h3 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
-                        Manage your entire roster from one dashboard.
+                        Manage your entire roster in one place.
                       </h3>
                       <p className="text-sm text-surface-600 dark:text-surface-400 mt-3 leading-relaxed">
-                        Oversee multiple creator rosters, negotiate contracts, automatically split
-                        management commissions, and generate comprehensive brand reporting.
+                        Oversee multiple creator schedules, review inbound requests, track contract
+                        obligations, and monitor campaign invoicing across brands.
                       </p>
                       <ul className="mt-5 space-y-2 text-xs text-surface-700 dark:text-surface-300">
                         <li className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Multi-creator pipeline with roster overview
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                          <span>Multi-creator pipeline with consolidated calendar</span>
                         </li>
                         <li className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Automated commission splits and split-payout routing
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                          <span>Standardized contract review and approval flow</span>
                         </li>
                       </ul>
                     </div>
                     <div className="rounded-xl border border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-900 p-6 space-y-3">
                       <div className="text-xs font-semibold text-surface-500">Agency Roster Metrics</div>
                       <p className="text-sm font-bold">24 Active Talents • 39 Active Contracts</p>
-                      <p className="text-xs text-surface-500">Commission split rate: 20% automated deduction.</p>
-                      <Badge variant="success" size="sm">All Payouts In Sync</Badge>
+                      <p className="text-xs text-surface-500">All deliverables and invoices on schedule.</p>
+                      <Badge variant="success" size="sm">Roster In Sync</Badge>
                     </div>
                   </CardContent>
                 </Card>
@@ -550,14 +666,13 @@ export const LandingPage: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-50 dark:bg-accent-950/80 border border-accent-200 dark:border-accent-800 text-accent-700 dark:text-accent-300 text-xs font-semibold mb-3">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Specialized AI Features</span>
+              <span>AI Intelligence</span>
             </div>
-            <h2 className="text-3xl font-extrabold text-surface-900 dark:text-surface-50 sm:text-4xl">
-              Artificial Intelligence Tailored for Creator Deals
+            <h2 className="text-3xl font-extrabold text-surface-900 dark:text-surface-50 sm:text-4xl tracking-tight">
+              AI Tools Purpose-Built for Creator Deals
             </h2>
             <p className="mt-4 text-base text-surface-600 dark:text-surface-400">
-              Not generic text generation—purpose-built intelligence to protect terms, clarify
-              expectations, and accelerate turnaround times.
+              Not generic chatbots—specialized tools to clarify terms, draft briefs, and review compliance.
             </p>
           </div>
 
@@ -570,17 +685,16 @@ export const LandingPage: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="text-base font-bold text-surface-900 dark:text-surface-100">
-                      AI Contract & Rights Inspector
+                      Contract & Rights Inspector
                     </h4>
                     <span className="text-xs text-brand-600 dark:text-brand-400 font-medium">
-                      Legal Risk Protection
+                      Terms Analysis
                     </span>
                   </div>
                 </div>
                 <p className="text-xs text-surface-600 dark:text-surface-400 leading-relaxed">
-                  Automatically parses uploaded agreement PDFs. Identifies perpetual image rights,
-                  broad indemnity liabilities, ambiguous exclusivity clauses, and suggests industry-standard
-                  counter-language.
+                  Scans agreement terms for perpetual image rights, broad indemnity clauses, and
+                  unclear exclusivity windows so negotiations proceed on fair grounds.
                 </p>
               </CardContent>
             </Card>
@@ -593,16 +707,16 @@ export const LandingPage: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="text-base font-bold text-surface-900 dark:text-surface-100">
-                      Dynamic Creative Brief Generator
+                      Creative Brief Generator
                     </h4>
                     <span className="text-xs text-accent-600 dark:text-accent-400 font-medium">
-                      Scope Standardization
+                      Scope Clarification
                     </span>
                   </div>
                 </div>
                 <p className="text-xs text-surface-600 dark:text-surface-400 leading-relaxed">
-                  Converts marketing campaign talking points into structured creator briefs complete
-                  with dos-and-don&apos;ts, CTA mandates, FTC disclosure rules, and recommended asset formats.
+                  Converts campaign objectives into clear creator briefs with required talking points,
+                  disclaimer requirements, and asset specifications.
                 </p>
               </CardContent>
             </Card>
@@ -615,16 +729,16 @@ export const LandingPage: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="text-base font-bold text-surface-900 dark:text-surface-100">
-                      Deliverable Asset Compliance Check
+                      Deliverable Compliance Scanner
                     </h4>
                     <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">
-                      Automated Pre-flight
+                      Pre-Submission Checks
                     </span>
                   </div>
                 </div>
                 <p className="text-xs text-surface-600 dark:text-surface-400 leading-relaxed">
-                  Scans uploaded video captions and descriptions for required brand links, discount
-                  codes, and proper sponsorship disclosures before submitting to brand review.
+                  Checks descriptions and captions for required sponsorship disclosure hashtags,
+                  tracking URLs, and discount codes before sending for review.
                 </p>
               </CardContent>
             </Card>
@@ -637,16 +751,16 @@ export const LandingPage: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="text-base font-bold text-surface-900 dark:text-surface-100">
-                      Rate Intelligence & Scope Benchmarks
+                      Campaign Scope Benchmarks
                     </h4>
                     <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                      Pricing Guidance
+                      Format & Timeline Guidance
                     </span>
                   </div>
                 </div>
                 <p className="text-xs text-surface-600 dark:text-surface-400 leading-relaxed">
-                  Provides data-backed baseline quotes based on content format, licensing duration,
-                  usage scope, and engagement thresholds so negotiations start on fair ground.
+                  Provides reasonable timeline recommendations and deliverable checklist templates
+                  based on content format and distribution platforms.
                 </p>
               </CardContent>
             </Card>
@@ -658,16 +772,15 @@ export const LandingPage: React.FC = () => {
       <section className="py-16 bg-gradient-to-tr from-brand-900 via-brand-800 to-surface-950 text-white relative overflow-hidden">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-            Ready to upgrade how you manage brand partnerships?
+            Ready to organize your creator partnerships?
           </h2>
           <p className="mt-4 text-base text-brand-200 max-w-xl mx-auto">
-            Get started with CreatorOS AI today. Scaffolded with modern TypeScript, accessible design
-            tokens, and structured collaboration workflows.
+            Experience a clear, collaborative workspace for campaigns, briefs, content reviews, and invoices.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/register">
               <Button size="lg" variant="accent" rightIcon={<ArrowRight className="w-4 h-4" />}>
-                Start Collaborating
+                Create Workspace
               </Button>
             </Link>
             <Link to="/dashboard">
@@ -693,14 +806,9 @@ export const LandingPage: React.FC = () => {
                 </span>
               </div>
               <p className="mt-3 text-xs leading-relaxed max-w-sm">
-                The modern operating system connecting creators and brands through structured
-                briefs, milestone escrow, and AI workflow intelligence.
+                The collaboration operating system connecting creators and brands through structured
+                briefs, asset reviews, and invoice status tracking.
               </p>
-              <div className="mt-4 flex items-center gap-2">
-                <Badge variant="success" size="sm" dot>
-                  Phase 0 Foundation Live
-                </Badge>
-              </div>
             </div>
 
             <div>
@@ -735,25 +843,14 @@ export const LandingPage: React.FC = () => {
                 <li><Link to="/dashboard" className="hover:text-brand-600 dark:hover:text-brand-400">Dashboard</Link></li>
                 <li><Link to="/login" className="hover:text-brand-600 dark:hover:text-brand-400">Sign In</Link></li>
                 <li><Link to="/register" className="hover:text-brand-600 dark:hover:text-brand-400">Register</Link></li>
-                <li>
-                  <a
-                    href="http://localhost:5000/api/health"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-brand-600 dark:hover:text-brand-400 flex items-center gap-1"
-                  >
-                    <span>Health API</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                </li>
               </ul>
             </div>
           </div>
 
           <div className="mt-12 pt-8 border-t border-surface-200 dark:border-surface-850 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p>© {new Date().getFullYear()} CreatorOS AI Technologies. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} CreatorOS AI. All rights reserved.</p>
             <p className="text-surface-400">
-              Built with React, Vite, TypeScript, Tailwind CSS, Express, and Mongoose.
+              Creator-brand collaboration and business management platform.
             </p>
           </div>
         </div>

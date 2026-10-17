@@ -1,24 +1,16 @@
 import React from 'react';
-import { Menu, Search, Bell, Activity, ExternalLink } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../../services/api';
+import { Menu, Search, Bell, ExternalLink } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { Avatar } from '../ui/Avatar';
-import { Badge } from '../ui/Badge';
 import { Link } from 'react-router-dom';
+import { useRole } from '../../context/RoleContext';
 
 export interface TopBarProps {
   onOpenMobileNav: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileNav }) => {
-  // Query backend health route via TanStack Query
-  const { data: healthData, isError, isLoading } = useQuery({
-    queryKey: ['systemHealth'],
-    queryFn: api.getHealth,
-    refetchInterval: 15000,
-    retry: 1,
-  });
+  const { roleLabel, userName } = useRole();
 
   return (
     <header className="h-16 border-b border-surface-200 dark:border-surface-800 bg-white/80 dark:bg-surface-950/80 backdrop-blur-md sticky top-0 z-10 px-4 md:px-6 flex items-center justify-between gap-4">
@@ -48,36 +40,22 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileNav }) => {
         </div>
       </div>
 
-      {/* Right Actions: API Status, Theme, Notifications, User */}
+      {/* Right Actions: Landing link, Dev link (DEV only), Theme, Notifications, User */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Real-time Health Badge from Server */}
-        <div className="hidden lg:flex items-center">
-          {isLoading ? (
-            <Badge variant="neutral" size="sm" dot>
-              Checking API...
-            </Badge>
-          ) : isError ? (
-            <Badge variant="warning" size="sm" dot>
-              API Standby
-            </Badge>
-          ) : (
-            <Badge
-              variant={healthData?.data?.status === 'ok' ? 'success' : 'warning'}
-              size="sm"
-              dot
-              title={`API ${healthData?.data?.status} - DB: ${healthData?.data?.database?.state || 'checking'}`}
-            >
-              <Activity className="w-3 h-3 mr-1 inline" />
-              API {healthData?.data?.status === 'ok' ? 'Online' : 'Degraded'}
-            </Badge>
-          )}
-        </div>
+        {import.meta.env.DEV && (
+          <Link
+            to="/dev/components"
+            className="hidden lg:inline-flex items-center text-[11px] font-medium text-surface-500 hover:text-brand-600 dark:hover:text-brand-400 px-2 py-1 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+          >
+            Dev Tools
+          </Link>
+        )}
 
         <Link
           to="/"
           className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-surface-600 dark:text-surface-300 hover:text-brand-600 dark:hover:text-brand-400 px-2.5 py-1.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
         >
-          <span>Landing Page</span>
+          <span>Website</span>
           <ExternalLink className="w-3.5 h-3.5" />
         </Link>
 
@@ -93,20 +71,20 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileNav }) => {
           <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-accent-500 ring-2 ring-white dark:ring-surface-950" />
         </button>
 
-        {/* User Profile Preview */}
+        {/* User Profile Preview with dynamic role */}
         <div className="flex items-center gap-3 pl-2 border-l border-surface-200 dark:border-surface-800">
           <Avatar
-            name="Alex Morgan"
+            name={userName}
             size="sm"
             status="online"
             className="cursor-pointer"
           />
           <div className="hidden xl:flex flex-col text-left">
             <span className="text-xs font-bold text-surface-900 dark:text-surface-100 leading-tight">
-              Alex Morgan
+              {userName}
             </span>
-            <span className="text-[11px] text-surface-500 dark:text-surface-400">
-              Creator • Pro Tier
+            <span className="text-[11px] text-surface-500 dark:text-surface-400 font-medium">
+              {roleLabel}
             </span>
           </div>
         </div>

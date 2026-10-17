@@ -1,6 +1,6 @@
 # CreatorOS AI — Creator-Brand Collaboration Platform
 
-A modern, full-stack operating system for creator-brand partnerships, structured campaign briefs, milestone escrow, and AI workflow intelligence.
+A modern, full-stack operating system for creator-brand partnerships, structured campaign briefs, deliverable approvals, and invoice status tracking.
 
 ---
 
@@ -176,3 +176,4 @@ cd client && npm run build
 - [x] Authentic SaaS landing page with zero lorem ipsum and zero fake statistics/testimonials
 - [x] Secrets segregated in `.env` and `.env.example` with `.env` in `.gitignore`
 - [x] Clean TypeScript builds (`tsc`) without any compiler or lint errors
+
