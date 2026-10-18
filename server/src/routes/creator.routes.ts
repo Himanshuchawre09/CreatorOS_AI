@@ -8,3 +8,4 @@ router.get('/', getCreators);
 router.get('/:id', optionalAuthenticate, getCreatorById);
 
 export default router;
+

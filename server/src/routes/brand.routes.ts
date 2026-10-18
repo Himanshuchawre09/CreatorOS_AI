@@ -8,3 +8,4 @@ router.get('/', getBrands);
 router.get('/:id', optionalAuthenticate, getBrandById);
 
 export default router;
+

@@ -157,3 +157,4 @@ export const BrandDetailPage: React.FC = () => {
     </div>
   );
 };
+

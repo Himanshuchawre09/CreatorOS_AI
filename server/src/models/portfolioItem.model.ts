@@ -58,3 +58,4 @@ const portfolioItemSchema = new Schema<IPortfolioItem>(
 portfolioItemSchema.index({ owner: 1, createdAt: -1 });
 
 export const PortfolioItem = mongoose.model<IPortfolioItem>('PortfolioItem', portfolioItemSchema);
+

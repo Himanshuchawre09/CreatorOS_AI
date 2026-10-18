@@ -400,3 +400,4 @@ describe('Phase 2 - Profiles, Portfolios & Discovery Suite', () => {
     expect(JSON.stringify(brandDetail.body)).not.toContain('passwordHash');
   });
 });
+

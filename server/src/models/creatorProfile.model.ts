@@ -147,3 +147,4 @@ creatorProfileSchema.index({ 'platforms.platform': 1 });
 creatorProfileSchema.index({ 'platforms.followers': 1 });
 
 export const CreatorProfile = mongoose.model<ICreatorProfile>('CreatorProfile', creatorProfileSchema);
+

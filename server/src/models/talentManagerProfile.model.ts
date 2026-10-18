@@ -54,3 +54,4 @@ export const TalentManagerProfile = mongoose.model<ITalentManagerProfile>(
   'TalentManagerProfile',
   talentManagerProfileSchema
 );
+

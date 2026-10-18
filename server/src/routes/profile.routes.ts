@@ -8,3 +8,4 @@ router.get('/me', authenticate, getMyProfile);
 router.put('/me', authenticate, updateMyProfile);
 
 export default router;
+

@@ -70,3 +70,4 @@ export const FreelancerProfile = mongoose.model<IFreelancerProfile>(
   'FreelancerProfile',
   freelancerProfileSchema
 );
+
