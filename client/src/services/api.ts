@@ -18,6 +18,11 @@ export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   user?: User;
+  profile?: any;
+  creator?: CreatorProfileData;
+  brand?: BrandProfileData;
+  portfolio?: PortfolioItemData[];
+  pagination?: PaginationMeta;
   message?: string;
   status?: string;
   errors?: unknown;
@@ -34,6 +39,89 @@ export interface RegisterPayload {
 export interface LoginPayload {
   email: string;
   password: string;
+}
+
+export interface PlatformItem {
+  platform: 'youtube' | 'instagram' | 'tiktok' | 'twitch' | 'blog' | 'other';
+  handle: string;
+  url: string;
+  followers: number;
+  engagementRate?: number;
+}
+
+export interface CreatorProfileData {
+  _id?: string;
+  user?: string;
+  displayName: string;
+  bio?: string;
+  niche: string;
+  platforms: PlatformItem[];
+  location?: string;
+  languages?: string[];
+  contentTypes?: string[];
+  rateNotes?: string;
+  avatarUrl?: string;
+  isPublic: boolean;
+  totalFollowers?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface BrandProfileData {
+  _id?: string;
+  user?: string;
+  companyName: string;
+  industry: string;
+  website?: string;
+  about?: string;
+  targetAudience?: string;
+  logoUrl?: string;
+  isPublic: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface FreelancerProfileData {
+  _id?: string;
+  user?: string;
+  headline: string;
+  skills: string[];
+  bio?: string;
+  portfolioLinks?: string[];
+  availability: 'available' | 'busy';
+  hourlyRate?: number;
+  isPublic: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TalentManagerProfileData {
+  _id?: string;
+  user?: string;
+  agencyName: string;
+  about?: string;
+  website?: string;
+  isPublic: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PortfolioItemData {
+  _id?: string;
+  owner?: string;
+  title: string;
+  description?: string;
+  type: 'video' | 'image' | 'link' | 'article';
+  url: string;
+  thumbnailUrl?: string;
+  createdAt?: string;
+}
+
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
 }
 
 export interface HealthData {
@@ -100,4 +188,58 @@ export const api = {
       method: 'POST',
     }),
   getMe: () => fetchApi<{ user: User }>('/auth/me'),
+
+  // Profiles
+  getMyProfile: () => fetchApi<any>('/profile/me'),
+  updateMyProfile: (data: any) =>
+    fetchApi<any>('/profile/me', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  // Discovery
+  getCreators: (params?: Record<string, string | number | undefined>) => {
+    const query = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined && val !== '') {
+          query.set(key, String(val));
+        }
+      });
+    }
+    const qs = query.toString();
+    return fetchApi<CreatorProfileData[]>(`/creators${qs ? `?${qs}` : ''}`);
+  },
+  getCreatorById: (id: string) => fetchApi<CreatorProfileData>(`/creators/${id}`),
+
+  getBrands: (params?: Record<string, string | number | undefined>) => {
+    const query = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined && val !== '') {
+          query.set(key, String(val));
+        }
+      });
+    }
+    const qs = query.toString();
+    return fetchApi<BrandProfileData[]>(`/brands${qs ? `?${qs}` : ''}`);
+  },
+  getBrandById: (id: string) => fetchApi<BrandProfileData>(`/brands/${id}`),
+
+  // Portfolio
+  getMyPortfolio: () => fetchApi<PortfolioItemData[]>('/portfolio/me'),
+  createPortfolioItem: (data: Partial<PortfolioItemData>) =>
+    fetchApi<PortfolioItemData>('/portfolio', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  updatePortfolioItem: (id: string, data: Partial<PortfolioItemData>) =>
+    fetchApi<PortfolioItemData>(`/portfolio/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  deletePortfolioItem: (id: string) =>
+    fetchApi<void>(`/portfolio/${id}`, {
+      method: 'DELETE',
+    }),
 };

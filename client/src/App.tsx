@@ -8,10 +8,15 @@ import { RoleProvider } from './context/RoleContext';
 import { AppShell } from './components/layout/AppShell';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { PublicOnlyRoute } from './components/auth/PublicOnlyRoute';
+import { RoleRoute } from './components/auth/RoleRoute';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { DiscoverPage } from './pages/DiscoverPage';
+import { CreatorDetailPage } from './pages/CreatorDetailPage';
+import { BrandDetailPage } from './pages/BrandDetailPage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
 import { DevComponentsPage } from './pages/DevComponentsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -48,11 +53,28 @@ export const App: React.FC = () => {
                     <Route path="/app" element={<AppShell />}>
                       <Route index element={<Navigate to="/dashboard" replace />} />
                       <Route path="dashboard" element={<DashboardPage />} />
+                      <Route path="discover" element={<DiscoverPage />} />
+                      <Route path="profile" element={<ProfilePage />} />
+                      <Route path="creators/:id" element={<CreatorDetailPage />} />
+                      <Route path="brands/:id" element={<BrandDetailPage />} />
                       <Route path="coming-soon" element={<ComingSoonPage />} />
                     </Route>
 
                     <Route element={<AppShell />}>
                       <Route path="/dashboard" element={<DashboardPage />} />
+                      
+                      {/* Discovery accessible to all standard roles */}
+                      <Route element={<RoleRoute allowedRoles={['creator', 'brand', 'freelancer', 'talentManager', 'admin']} />}>
+                        <Route path="/discover" element={<DiscoverPage />} />
+                        <Route path="/creators/:id" element={<CreatorDetailPage />} />
+                        <Route path="/brands/:id" element={<BrandDetailPage />} />
+                      </Route>
+
+                      {/* Profile management role-guarded */}
+                      <Route element={<RoleRoute allowedRoles={['creator', 'brand', 'freelancer', 'talentManager']} />}>
+                        <Route path="/profile" element={<ProfilePage />} />
+                      </Route>
+
                       <Route path="/coming-soon" element={<ComingSoonPage />} />
                       {import.meta.env.DEV && (
                         <Route path="/dev/components" element={<DevComponentsPage />} />

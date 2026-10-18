@@ -52,6 +52,38 @@ export const authenticate = async (
   }
 };
 
+export const optionalAuthenticate = async (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const cookieToken = req.cookies?.[AUTH_COOKIE_NAME] || req.signedCookies?.[AUTH_COOKIE_NAME];
+    const headerToken = req.headers.authorization?.replace(/^Bearer\s+/i, '');
+    const token = cookieToken || headerToken;
+
+    if (!token) {
+      return next();
+    }
+
+    try {
+      const decoded = verifyToken(token);
+      if (decoded && decoded.userId) {
+        const user = await User.findById(decoded.userId);
+        if (user && user.status !== 'suspended') {
+          req.user = user;
+        }
+      }
+    } catch {
+      // Ignore token verification errors for optional auth
+    }
+
+    next();
+  } catch {
+    next();
+  }
+};
+
 export const authorize = (...roles: UserRole[]) => {
   return (req: Request, _res: Response, next: NextFunction): void => {
     if (!req.user) {
@@ -65,4 +97,3 @@ export const authorize = (...roles: UserRole[]) => {
     next();
   };
 };
-

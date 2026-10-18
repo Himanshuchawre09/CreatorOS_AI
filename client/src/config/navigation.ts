@@ -14,6 +14,7 @@ import {
   Sparkles,
   Settings,
   ShieldAlert,
+  User,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -38,8 +39,9 @@ export const ROLE_LABELS: Record<string, string> = {
 
 const talentManagerNav: NavItemConfig[] = [
   { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+  { label: 'Discover', path: '/discover', icon: Compass },
+  { label: 'Profile', path: '/profile', icon: User },
   { label: 'Campaigns', path: '/coming-soon?feature=Campaigns', icon: Megaphone, badge: 'Soon', isSoon: true },
-  { label: 'Discover', path: '/coming-soon?feature=Discover', icon: Compass, badge: 'Soon', isSoon: true },
   { label: 'Collaboration Requests', path: '/coming-soon?feature=Collaboration+Requests', icon: GitPullRequest, badge: 'Soon', isSoon: true },
   { label: 'Contracts', path: '/coming-soon?feature=Contracts', icon: FileCheck2, badge: 'Soon', isSoon: true },
   { label: 'Tasks', path: '/coming-soon?feature=Tasks', icon: CheckSquare, badge: 'Soon', isSoon: true },
@@ -56,8 +58,9 @@ const talentManagerNav: NavItemConfig[] = [
 export const ROLE_NAVIGATION: Record<string, NavItemConfig[]> = {
   creator: [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { label: 'Discover Brands', path: '/discover', icon: Compass },
+    { label: 'Profile', path: '/profile', icon: User },
     { label: 'Campaigns', path: '/coming-soon?feature=Campaigns', icon: Megaphone, badge: 'Soon', isSoon: true },
-    { label: 'Discover Brands', path: '/coming-soon?feature=Discover+Brands', icon: Compass, badge: 'Soon', isSoon: true },
     { label: 'Collaboration Requests', path: '/coming-soon?feature=Collaboration+Requests', icon: GitPullRequest, badge: 'Soon', isSoon: true },
     { label: 'Contracts', path: '/coming-soon?feature=Contracts', icon: FileCheck2, badge: 'Soon', isSoon: true },
     { label: 'Tasks', path: '/coming-soon?feature=Tasks', icon: CheckSquare, badge: 'Soon', isSoon: true },
@@ -72,8 +75,9 @@ export const ROLE_NAVIGATION: Record<string, NavItemConfig[]> = {
   ],
   brand: [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { label: 'Discover Creators', path: '/discover', icon: Compass },
+    { label: 'Profile', path: '/profile', icon: User },
     { label: 'Campaigns', path: '/coming-soon?feature=Campaigns', icon: Megaphone, badge: 'Soon', isSoon: true },
-    { label: 'Discover Creators', path: '/coming-soon?feature=Discover+Creators', icon: Compass, badge: 'Soon', isSoon: true },
     { label: 'Collaboration Requests', path: '/coming-soon?feature=Collaboration+Requests', icon: GitPullRequest, badge: 'Soon', isSoon: true },
     { label: 'Contracts', path: '/coming-soon?feature=Contracts', icon: FileCheck2, badge: 'Soon', isSoon: true },
     { label: 'Tasks', path: '/coming-soon?feature=Tasks', icon: CheckSquare, badge: 'Soon', isSoon: true },
@@ -88,6 +92,8 @@ export const ROLE_NAVIGATION: Record<string, NavItemConfig[]> = {
   ],
   freelancer: [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { label: 'Discover', path: '/discover', icon: Compass },
+    { label: 'Profile', path: '/profile', icon: User },
     { label: 'Tasks', path: '/coming-soon?feature=Tasks', icon: CheckSquare, badge: 'Soon', isSoon: true },
     { label: 'Content Review', path: '/coming-soon?feature=Content+Review', icon: Eye, badge: 'Soon', isSoon: true },
     { label: 'Contracts', path: '/coming-soon?feature=Contracts', icon: FileCheck2, badge: 'Soon', isSoon: true },
@@ -101,6 +107,7 @@ export const ROLE_NAVIGATION: Record<string, NavItemConfig[]> = {
   talent_manager: talentManagerNav,
   admin: [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { label: 'Discover', path: '/discover', icon: Compass },
     { label: 'Campaigns', path: '/coming-soon?feature=Campaigns', icon: Megaphone, badge: 'Soon', isSoon: true },
     { label: 'Contracts', path: '/coming-soon?feature=Contracts', icon: FileCheck2, badge: 'Soon', isSoon: true },
     { label: 'Invoices & Payments', path: '/coming-soon?feature=Invoices+%26+Payments', icon: Receipt, badge: 'Soon', isSoon: true },
