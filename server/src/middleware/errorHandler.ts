@@ -11,35 +11,61 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ): void => {
+  const currentEnv = process.env.NODE_ENV || env.NODE_ENV;
+  const isDev = currentEnv === 'development';
+  const isProd = currentEnv === 'production';
+
+  // Server-side logging
   logger.error(`Error: ${err.message}`, {
     name: err.name,
-    stack: env.NODE_ENV === 'development' ? err.stack : undefined,
+    stack: err.stack,
   });
 
   // Handle known operational AppError
   if (err instanceof AppError) {
+    if (isDev) {
+      res.status(err.statusCode).json({
+        success: false,
+        status: 'error',
+        message: err.message,
+        ...(err.details ? { details: err.details } : {}),
+        stack: err.stack,
+      });
+      return;
+    }
+
+    // In production and test: return just { success: false, status, message }
     res.status(err.statusCode).json({
       success: false,
       status: 'error',
       message: err.message,
-      ...(err.details ? { details: err.details } : {}),
-      ...(env.NODE_ENV === 'development' ? { stack: err.stack } : {}),
     });
     return;
   }
 
   // Handle Zod validation errors
   if (err instanceof ZodError) {
-    const formattedErrors = err.errors.map((e) => ({
-      path: e.path.join('.'),
-      message: e.message,
-    }));
+    if (isDev) {
+      const formattedErrors = err.errors.map((e) => ({
+        path: e.path.join('.'),
+        message: e.message,
+      }));
 
+      res.status(400).json({
+        success: false,
+        status: 'fail',
+        message: 'Validation failed',
+        errors: formattedErrors,
+        stack: err.stack,
+      });
+      return;
+    }
+
+    // In production and test: return just { success: false, status, message }
     res.status(400).json({
       success: false,
       status: 'fail',
       message: 'Validation failed',
-      errors: formattedErrors,
     });
     return;
   }
@@ -49,19 +75,19 @@ export const errorHandler = (
     res.status(400).json({
       success: false,
       status: 'fail',
-      message: `Invalid ${err.path}: ${err.value}`,
+      message: isProd ? 'Invalid identifier' : `Invalid ${err.path}: ${err.value}`,
+      ...(isDev ? { stack: err.stack } : {}),
     });
     return;
   }
 
   // Handle Mongoose ValidationError
   if (err instanceof mongoose.Error.ValidationError) {
-    const errors = Object.values(err.errors).map((el) => el.message);
     res.status(400).json({
       success: false,
       status: 'fail',
       message: 'Database validation failed',
-      errors,
+      ...(isDev ? { stack: err.stack } : {}),
     });
     return;
   }
@@ -72,16 +98,18 @@ export const errorHandler = (
       success: false,
       status: 'fail',
       message: 'Duplicate key error: A record with that value already exists.',
+      ...(isDev ? { stack: err.stack } : {}),
     });
     return;
   }
 
-  // Fallback for unhandled unexpected errors
+  // Fallback for unexpected (non-operational) errors
+  // In production, return generic message "Something went wrong" and log real error server-side only
   const statusCode = 500;
   res.status(statusCode).json({
     success: false,
     status: 'error',
-    message: env.NODE_ENV === 'production' ? 'Internal server error' : err.message,
-    ...(env.NODE_ENV === 'development' ? { stack: err.stack } : {}),
+    message: isProd ? 'Something went wrong' : err.message,
+    ...(isDev ? { stack: err.stack } : {}),
   });
 };

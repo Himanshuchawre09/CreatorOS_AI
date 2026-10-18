@@ -5,6 +5,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import bcrypt from 'bcrypt';
 import { createApp } from '../app';
 import { User } from '../models/user.model';
+import { env } from '../config/env';
 
 describe('Auth & Authorization Suite', () => {
   let mongoServer: MongoMemoryServer;
@@ -329,5 +330,38 @@ describe('Auth & Authorization Suite', () => {
     expect(successRes.body.data.database).toBeDefined();
     expect(successRes.body.data.memory).toBeDefined();
   });
+
+  it('confirms a 403 response has no "stack" key when NODE_ENV is production', async () => {
+    const originalEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+    (env as any).NODE_ENV = 'production';
+
+    try {
+      const creatorRes = await request(app)
+        .post('/api/auth/register')
+        .send({
+          name: 'Production Creator',
+          email: 'prodcreator@test.com',
+          password: 'Password123',
+          role: 'creator',
+        });
+      const creatorCookie = creatorRes.headers['set-cookie'];
+
+      const res = await request(app)
+        .get('/api/admin/ping')
+        .set('Cookie', creatorCookie);
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.status).toBe('error');
+      expect(res.body.message).toBe('Access denied: insufficient permissions');
+      expect(res.body).not.toHaveProperty('stack');
+      expect(res.body.stack).toBeUndefined();
+    } finally {
+      process.env.NODE_ENV = originalEnv;
+      (env as any).NODE_ENV = originalEnv;
+    }
+  });
 });
+
 
