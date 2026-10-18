@@ -1,16 +1,24 @@
 import React from 'react';
-import { Menu, Search, Bell, ExternalLink } from 'lucide-react';
+import { Menu, Search, Bell, ExternalLink, LogOut } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { Avatar } from '../ui/Avatar';
 import { Link } from 'react-router-dom';
-import { useRole } from '../../context/RoleContext';
+import { useAuth } from '../../context/AuthContext';
+import { ROLE_LABELS } from '../../config/navigation';
 
 export interface TopBarProps {
   onOpenMobileNav: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileNav }) => {
-  const { roleLabel, userName } = useRole();
+  const { user, logout } = useAuth();
+  const userName = user?.name || 'Guest';
+  const role = user?.role || 'creator';
+  const roleLabel = ROLE_LABELS[role] || 'Creator';
+
+  const handleLogout = async () => {
+    await logout();
+  };
 
   return (
     <header className="h-16 border-b border-surface-200 dark:border-surface-800 bg-white/80 dark:bg-surface-950/80 backdrop-blur-md sticky top-0 z-10 px-4 md:px-6 flex items-center justify-between gap-4">
@@ -40,7 +48,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileNav }) => {
         </div>
       </div>
 
-      {/* Right Actions: Landing link, Dev link (DEV only), Theme, Notifications, User */}
+      {/* Right Actions: Landing link, Dev link (DEV only), Theme, Notifications, User & Logout */}
       <div className="flex items-center gap-2 sm:gap-3">
         {import.meta.env.DEV && (
           <Link
@@ -72,7 +80,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileNav }) => {
         </button>
 
         {/* User Profile Preview with dynamic role */}
-        <div className="flex items-center gap-3 pl-2 border-l border-surface-200 dark:border-surface-800">
+        <div className="flex items-center gap-2.5 pl-2 border-l border-surface-200 dark:border-surface-800">
           <Avatar
             name={userName}
             size="sm"
@@ -87,6 +95,16 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileNav }) => {
               {roleLabel}
             </span>
           </div>
+
+          {/* Working Log Out button */}
+          <button
+            onClick={handleLogout}
+            title="Log out"
+            aria-label="Log out"
+            className="p-1.5 rounded-lg text-surface-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </header>

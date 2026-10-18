@@ -4,12 +4,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Layers,
-  UserCheck,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Badge } from '../ui/Badge';
-import { ROLE_NAVIGATION, ROLE_LABELS, UserRole } from '../../config/navigation';
-import { useRole } from '../../context/RoleContext';
+import { ROLE_NAVIGATION } from '../../config/navigation';
+import { useAuth } from '../../context/AuthContext';
 
 export interface SidebarProps {
   collapsed: boolean;
@@ -17,10 +16,9 @@ export interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggleCollapse }) => {
-  const { role, setRole, roleLabel } = useRole();
+  const { user } = useAuth();
+  const role = user?.role || 'creator';
   const navItems = ROLE_NAVIGATION[role] || ROLE_NAVIGATION.creator;
-
-  const roleOptions: UserRole[] = ['creator', 'brand', 'freelancer', 'talent_manager', 'admin'];
 
   return (
     <aside
@@ -59,30 +57,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggleCollapse })
           <ChevronLeft className="w-4 h-4" />
         </button>
       </div>
-
-      {/* Role Switcher in Sidebar (so reviewer can preview all role views) */}
-      {!collapsed ? (
-        <div className="px-3 pt-3 pb-1 border-b border-surface-100 dark:border-surface-850">
-          <div className="flex items-center justify-between text-[11px] font-semibold text-surface-500 dark:text-surface-400 mb-1 px-1">
-            <span className="flex items-center gap-1.5">
-              <UserCheck className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
-              Role View
-            </span>
-            <span className="text-[10px] text-surface-400 capitalize">{roleLabel}</span>
-          </div>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value as UserRole)}
-            className="w-full text-xs font-semibold rounded-lg bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 px-2.5 py-1.5 text-surface-800 dark:text-surface-200 focus:outline-none focus:ring-1 focus:ring-brand-500"
-          >
-            {roleOptions.map((r) => (
-              <option key={r} value={r}>
-                {ROLE_LABELS[r]} View
-              </option>
-            ))}
-          </select>
-        </div>
-      ) : null}
 
       {/* Navigation Links */}
       <div className="flex-1 py-3 px-3 space-y-1 overflow-y-auto">

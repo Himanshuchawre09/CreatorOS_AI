@@ -260,8 +260,8 @@ export const LandingPage: React.FC = () => {
                         <span className="text-brand-600 dark:text-brand-400 font-semibold flex items-center gap-1.5">
                           <Sparkles className="w-3.5 h-3.5" /> AI Match & Scope
                         </span>
-                        <Badge variant="accent" size="sm">
-                          Terms Verified
+                        <Badge variant="neutral" size="sm">
+                          AI Suggestion
                         </Badge>
                       </div>
 
@@ -271,8 +271,8 @@ export const LandingPage: React.FC = () => {
 
                       <ul className="mt-2 space-y-1.5 text-[11px] text-surface-600 dark:text-surface-400 leading-tight">
                         <li className="flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
-                          <span>No perpetual usage rights detected</span>
+                          <CheckCircle2 className="w-3.5 h-3.5 text-brand-500 flex-shrink-0" />
+                          <span>AI suggestion: review these terms before accepting</span>
                         </li>
                         <li className="flex items-center gap-1.5">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import {
   Layers,
   Mail,
@@ -13,6 +13,7 @@ import {
   Scissors,
   Users2,
   ArrowRight,
+  AlertCircle,
 } from 'lucide-react';
 import { z } from 'zod';
 import { Input } from '../components/ui/Input';
@@ -21,16 +22,20 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { useToast } from '../context/ToastContext';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { cn } from '../lib/utils';
+import { useAuth } from '../context/AuthContext';
 
-type AllowedRole = 'creator' | 'brand' | 'freelancer' | 'talent_manager';
+type AllowedRole = 'creator' | 'brand' | 'freelancer' | 'talentManager';
 
 const registerSchema = z
   .object({
-    role: z.enum(['creator', 'brand', 'freelancer', 'talent_manager']),
-    name: z.string().min(2, 'Name must be at least 2 characters'),
+    role: z.enum(['creator', 'brand', 'freelancer', 'talentManager']),
+    name: z.string().min(1, 'Name is required'),
     company: z.string().optional(),
     email: z.string().email('Please enter a valid email address'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(/^(?=.*[a-zA-Z])(?=.*\d)/, 'Password must contain at least one letter and one number'),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
     agreeTerms: z.literal(true, {
       errorMap: () => ({ message: 'You must accept the Terms of Service and Privacy Policy' }),
@@ -54,9 +59,17 @@ export const RegisterPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [serverError, setServerError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const { user, register } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  // If already logged in, redirect to dashboard
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const roleCards: { id: AllowedRole; title: string; desc: string; icon: React.ReactNode }[] = [
     {
@@ -78,16 +91,17 @@ export const RegisterPage: React.FC = () => {
       icon: <Scissors className="w-5 h-5 text-purple-600 dark:text-purple-400" />,
     },
     {
-      id: 'talent_manager',
+      id: 'talentManager',
       title: 'Talent Manager',
       desc: 'Agency, talent representation',
       icon: <Users2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />,
     },
   ];
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+    setServerError(null);
 
     const result = registerSchema.safeParse({
       role,
@@ -111,11 +125,24 @@ export const RegisterPage: React.FC = () => {
       return;
     }
 
-    setLoading(true);
-    setTimeout(() => {
+    try {
+      setLoading(true);
+      await register({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+        role,
+        orgName: company.trim() || undefined,
+      });
+
+      toast.success('Account created successfully! Welcome to your workspace.');
+      navigate('/dashboard', { replace: true });
+    } catch (err: any) {
+      const message = err.message || 'Registration failed. Please try again.';
+      setServerError(message);
+    } finally {
       setLoading(false);
-      toast.info('Sign-up opens in the next release');
-    }, 400);
+    }
   };
 
   return (
@@ -148,6 +175,13 @@ export const RegisterPage: React.FC = () => {
           </CardHeader>
 
           <CardContent className="space-y-5">
+            {serverError && (
+              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs text-left">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span className="leading-snug">{serverError}</span>
+              </div>
+            )}
+
             {/* Card-Style Role Picker */}
             <div className="space-y-2 text-left">
               <label className="block text-xs font-semibold text-surface-700 dark:text-surface-300">
@@ -161,7 +195,10 @@ export const RegisterPage: React.FC = () => {
                     <button
                       type="button"
                       key={r.id}
-                      onClick={() => setRole(r.id)}
+                      onClick={() => {
+                        setRole(r.id);
+                        if (serverError) setServerError(null);
+                      }}
                       className={cn(
                         'flex items-start gap-3 p-3 rounded-xl border text-left transition-all duration-150',
                         isSelected
@@ -196,6 +233,7 @@ export const RegisterPage: React.FC = () => {
                   onChange={(e) => {
                     setName(e.target.value);
                     if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }));
+                    if (serverError) setServerError(null);
                   }}
                   error={errors.name}
                   leftIcon={<User className="w-4 h-4" />}
@@ -205,7 +243,10 @@ export const RegisterPage: React.FC = () => {
                   label="Channel / Organization"
                   placeholder="e.g. Studio Apex"
                   value={company}
-                  onChange={(e) => setCompany(e.target.value)}
+                  onChange={(e) => {
+                    setCompany(e.target.value);
+                    if (serverError) setServerError(null);
+                  }}
                   leftIcon={<Building className="w-4 h-4" />}
                 />
               </div>
@@ -218,6 +259,7 @@ export const RegisterPage: React.FC = () => {
                 onChange={(e) => {
                   setEmail(e.target.value);
                   if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
+                  if (serverError) setServerError(null);
                 }}
                 error={errors.email}
                 leftIcon={<Mail className="w-4 h-4" />}
@@ -228,11 +270,12 @@ export const RegisterPage: React.FC = () => {
                 <Input
                   label="Password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="At least 8 characters"
+                  placeholder="At least 8 chars with letter & number"
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
                     if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
+                    if (serverError) setServerError(null);
                   }}
                   error={errors.password}
                   leftIcon={<Lock className="w-4 h-4" />}
@@ -257,6 +300,7 @@ export const RegisterPage: React.FC = () => {
                   onChange={(e) => {
                     setConfirmPassword(e.target.value);
                     if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+                    if (serverError) setServerError(null);
                   }}
                   error={errors.confirmPassword}
                   leftIcon={<Lock className="w-4 h-4" />}

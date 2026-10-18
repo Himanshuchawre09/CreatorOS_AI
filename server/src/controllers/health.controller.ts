@@ -4,10 +4,22 @@ import { HealthService } from '../services/health.service';
 export const getHealth = (_req: Request, res: Response, next: NextFunction): void => {
   try {
     const health = HealthService.getHealthStatus();
-    // Return 200 OK even if degraded so monitors can inspect detailed JSON
+    // Trimmed public response returning only status and timestamp
+    res.status(200).json({
+      status: health.status,
+      timestamp: health.timestamp,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getDiagnostics = (_req: Request, res: Response, next: NextFunction): void => {
+  try {
+    const diagnostics = HealthService.getHealthStatus();
     res.status(200).json({
       success: true,
-      data: health,
+      data: diagnostics,
     });
   } catch (error) {
     next(error);

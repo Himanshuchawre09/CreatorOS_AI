@@ -29,6 +29,10 @@ export class AppError extends Error {
     return new AppError(message, 404);
   }
 
+  static conflict(message = 'Conflict', details?: unknown) {
+    return new AppError(message, 409, details);
+  }
+
   static internal(message = 'Internal server error') {
     return new AppError(message, 500);
   }

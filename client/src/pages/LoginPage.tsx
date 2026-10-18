@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Layers, Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { Layers, Mail, Lock, ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { z } from 'zod';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/Card';
 import { useToast } from '../context/ToastContext';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
+import { useAuth } from '../context/AuthContext';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -20,13 +21,23 @@ export const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<LoginErrors>({});
+  const [serverError, setServerError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const { user, login } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleLogin = (e: React.FormEvent) => {
+  // If already logged in, redirect to dashboard
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+    setServerError(null);
 
     const result = loginSchema.safeParse({ email: email.trim(), password });
     if (!result.success) {
@@ -41,12 +52,22 @@ export const LoginPage: React.FC = () => {
       return;
     }
 
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      setLoading(true);
+      await login({
+        email: email.trim(),
+        password,
+      });
+
       toast.success('Welcome back to your workspace!');
-      navigate('/dashboard');
-    }, 400);
+      const destination = (location.state as any)?.from?.pathname || '/dashboard';
+      navigate(destination, { replace: true });
+    } catch (err: any) {
+      const message = err.message || 'Invalid email or password';
+      setServerError(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -80,6 +101,13 @@ export const LoginPage: React.FC = () => {
           </CardHeader>
 
           <CardContent>
+            {serverError && (
+              <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span className="leading-snug">{serverError}</span>
+              </div>
+            )}
+
             <form onSubmit={handleLogin} className="space-y-4">
               <Input
                 label="Work Email"
@@ -89,6 +117,7 @@ export const LoginPage: React.FC = () => {
                 onChange={(e) => {
                   setEmail(e.target.value);
                   if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
+                  if (serverError) setServerError(null);
                 }}
                 error={errors.email}
                 leftIcon={<Mail className="w-4 h-4" />}
@@ -103,6 +132,7 @@ export const LoginPage: React.FC = () => {
                 onChange={(e) => {
                   setPassword(e.target.value);
                   if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
+                  if (serverError) setServerError(null);
                 }}
                 error={errors.password}
                 leftIcon={<Lock className="w-4 h-4" />}
@@ -146,7 +176,6 @@ export const LoginPage: React.FC = () => {
             </form>
           </CardContent>
 
-          {/* Proper padding inside card */}
           <CardFooter className="justify-center text-xs text-surface-500 py-4 px-6 border-t border-surface-100 dark:border-surface-800">
             <span>Don&apos;t have an account yet?</span>
             <Link to="/register" className="ml-1.5 font-bold text-brand-600 dark:text-brand-400 hover:underline">

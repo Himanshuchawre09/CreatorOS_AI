@@ -1,5 +1,7 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import apiRouter from './routes';
 import { errorHandler } from './middleware/errorHandler';
 import { AppError } from './utils/AppError';
@@ -9,31 +11,23 @@ import { logger } from './utils/logger';
 export const createApp = (): Application => {
   const app = express();
 
-  // CORS Configuration
-  const allowedOrigins = [
-    env.CLIENT_URL,
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://localhost:3000',
-  ];
+  // Security Headers
+  app.use(helmet());
 
+  // CORS Configuration - allow credentials only from CLIENT_URL origin in env
   app.use(
     cors({
-      origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps, curl, server-to-server)
-        if (!origin || allowedOrigins.includes(origin) || env.NODE_ENV === 'development') {
-          callback(null, true);
-        } else {
-          callback(new Error(`Origin ${origin} not allowed by CORS`));
-        }
-      },
+      origin: env.CLIENT_URL,
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     })
   );
 
-  // Standard Middleware
+  // Cookie Parser for JWT authentication
+  app.use(cookieParser());
+
+  // Standard Body Parsing
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 

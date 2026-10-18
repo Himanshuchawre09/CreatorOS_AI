@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
 import { UserRole, ROLE_LABELS } from '../config/navigation';
+import { useAuth } from './AuthContext';
 
 interface RoleContextType {
   role: UserRole;
-  setRole: (role: UserRole) => void;
   roleLabel: string;
   userName: string;
 }
@@ -11,28 +11,17 @@ interface RoleContextType {
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [role, setRoleState] = useState<UserRole>(() => {
-    const saved = localStorage.getItem('creatoros-role') as UserRole;
-    if (saved && ROLE_LABELS[saved]) return saved;
-    return 'creator';
-  });
+  const { user } = useAuth();
 
-  const userName = 'Alex Morgan';
-
-  useEffect(() => {
-    localStorage.setItem('creatoros-role', role);
-  }, [role]);
-
-  const setRole = (newRole: UserRole) => {
-    setRoleState(newRole);
-  };
+  const role: UserRole = user?.role || 'creator';
+  const roleLabel = ROLE_LABELS[role] || 'Creator';
+  const userName = user?.name || 'Guest';
 
   return (
     <RoleContext.Provider
       value={{
         role,
-        setRole,
-        roleLabel: ROLE_LABELS[role] || 'Creator',
+        roleLabel,
         userName,
       }}
     >

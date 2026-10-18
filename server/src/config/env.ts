@@ -12,6 +12,8 @@ const envSchema = z.object({
   MONGODB_URI: z.string().default('mongodb://localhost:27017/creatoros'),
   JWT_SECRET: z.string().min(16).default('super_secret_creatoros_development_jwt_key_32bytes'),
   JWT_EXPIRES_IN: z.string().default('7d'),
+  ADMIN_EMAIL: z.string().email().optional(),
+  ADMIN_PASSWORD: z.string().optional(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

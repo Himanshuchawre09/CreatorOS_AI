@@ -1,48 +1,70 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-export type UserRole = 'creator' | 'brand' | 'freelancer' | 'agency';
+export type UserRole = 'creator' | 'brand' | 'freelancer' | 'talentManager' | 'admin';
+export type UserStatus = 'active' | 'suspended';
 
 export interface IUser extends Document {
-  email: string;
   name: string;
+  email: string;
+  passwordHash: string;
   role: UserRole;
-  avatarUrl?: string;
-  companyName?: string;
+  orgName?: string;
+  status: UserStatus;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const userSchema = new Schema<IUser>(
   {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     email: {
       type: String,
       required: true,
       unique: true,
       trim: true,
       lowercase: true,
+      index: true,
     },
-    name: {
+    passwordHash: {
       type: String,
       required: true,
-      trim: true,
+      select: false,
     },
     role: {
       type: String,
-      enum: ['creator', 'brand', 'freelancer', 'agency'],
+      enum: ['creator', 'brand', 'freelancer', 'talentManager', 'admin'],
       default: 'creator',
       required: true,
     },
-    avatarUrl: {
+    orgName: {
       type: String,
       trim: true,
     },
-    companyName: {
+    status: {
       type: String,
-      trim: true,
+      enum: ['active', 'suspended'],
+      default: 'active',
+      required: true,
     },
   },
   {
     timestamps: true,
+    toJSON: {
+      transform: (_doc, ret: Record<string, any>) => {
+        delete ret.passwordHash;
+        return ret;
+      },
+    },
+    toObject: {
+      transform: (_doc, ret: Record<string, any>) => {
+        delete ret.passwordHash;
+        return ret;
+      },
+    },
   }
 );
 
