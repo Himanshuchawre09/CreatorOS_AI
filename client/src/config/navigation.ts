@@ -113,6 +113,6 @@ export const ROLE_NAVIGATION: Record<string, NavItemConfig[]> = {
     { label: 'Invoices & Payments', path: '/coming-soon?feature=Invoices+%26+Payments', icon: Receipt, badge: 'Soon', isSoon: true },
     { label: 'Analytics', path: '/coming-soon?feature=Analytics', icon: BarChart3, badge: 'Soon', isSoon: true },
     { label: 'Settings', path: '/coming-soon?feature=Settings', icon: Settings, badge: 'Soon', isSoon: true },
-    { label: 'Admin', path: '/coming-soon?feature=Admin+Console', icon: ShieldAlert, badge: 'Admin', isSoon: true },
+    { label: 'Admin', path: '/admin', icon: ShieldAlert, badge: 'Admin' },
   ],
 };

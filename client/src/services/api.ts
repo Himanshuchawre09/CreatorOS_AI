@@ -316,6 +316,7 @@ export interface PaginationMeta {
   page: number;
   limit: number;
   pages: number;
+  totalPages?: number;
 }
 
 export interface HealthData {
@@ -686,6 +687,57 @@ export const api = {
     fetchApi<AIContentPlanResponse>('/ai/content-plan', {
       method: 'POST',
       body: JSON.stringify(payload),
+    }),
+
+  // Dashboard Endpoints
+  getDashboardStats: () => fetchApi<any>('/dashboard/stats'),
+
+  // Talent Link / Roster Endpoints
+  getTalentLinks: () => fetchApi<any[]>('/talent-links'),
+  inviteCreatorToRoster: (payload: { creatorId?: string; creatorEmail?: string; notes?: string }) =>
+    fetchApi<any>('/talent-links/invite', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  respondToTalentLink: (id: string, action: 'accept' | 'decline') =>
+    fetchApi<any>(`/talent-links/${id}/respond`, {
+      method: 'PUT',
+      body: JSON.stringify({ action }),
+    }),
+  deleteTalentLink: (id: string) =>
+    fetchApi<void>(`/talent-links/${id}`, {
+      method: 'DELETE',
+    }),
+
+  // Admin Endpoints
+  getAdminUsers: (params?: {
+    q?: string;
+    role?: string;
+    status?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    const query = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined && val !== '') {
+          query.set(key, String(val));
+        }
+      });
+    }
+    const qs = query.toString();
+    return fetchApi<User[]>(`/admin/users${qs ? `?${qs}` : ''}`);
+  },
+  updateAdminUserStatus: (id: string, status: 'active' | 'suspended') =>
+    fetchApi<User>(`/admin/users/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    }),
+  getAdminPlatformStats: () => fetchApi<any>('/admin/platform-stats'),
+  updateAdminProfileVisibility: (type: 'creator' | 'brand', id: string, isPublic: boolean) =>
+    fetchApi<any>(`/admin/profiles/${type}/${id}/visibility`, {
+      method: 'PUT',
+      body: JSON.stringify({ isPublic }),
     }),
 };
 

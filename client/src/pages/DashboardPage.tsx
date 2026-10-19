@@ -1,409 +1,708 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { api } from '../services/api';
 import {
   Sparkles,
   DollarSign,
-  FileText,
   Clock,
-  Send,
   Plus,
-  Receipt,
   FileCheck2,
+  Users,
+  CheckSquare,
+  Eye,
+  Megaphone,
+  ArrowRight,
+  Loader2,
+  Check,
+  X,
+  UserPlus,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
-import { Tabs, TabsList, TabTrigger, TabContent } from '../components/ui/Tabs';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/Table';
-import { Avatar } from '../components/ui/Avatar';
 import { Modal } from '../components/ui/Modal';
 import { Input } from '../components/ui/Input';
 import { Textarea } from '../components/ui/Textarea';
-import { Select } from '../components/ui/Select';
-import { useToast } from '../context/ToastContext';
-
-type PartnershipStatus = 'Brief Drafting' | 'In Review' | 'Approved' | 'Invoice Sent' | 'Paid';
-
-interface CampaignItem {
-  id: string;
-  brand: string;
-  deliverable: string;
-  budget: string;
-  status: PartnershipStatus;
-  badgeVariant: 'neutral' | 'warning' | 'brand' | 'accent' | 'success';
-  dueDate: string;
-}
+import { Link } from 'react-router-dom';
 
 export const DashboardPage: React.FC = () => {
+  const { user } = useAuth();
   const { toast } = useToast();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('partnerships');
 
-  // Form state for Demo Modal
-  const [campaignTitle, setCampaignTitle] = useState('');
-  const [budget, setBudget] = useState('');
-  const [scopeType, setScopeType] = useState('video');
-  const [briefSummary, setBriefSummary] = useState('');
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleCreateCampaign = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsModalOpen(false);
-    toast.success(
-      `Campaign brief "${campaignTitle || 'New Campaign'}" initialized in workspace.`,
-      'Campaign Created'
-    );
-    setCampaignTitle('');
-    setBudget('');
-    setBriefSummary('');
+  // Talent Manager Invite Modal
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteNotes, setInviteNotes] = useState('');
+  const [submittingInvite, setSubmittingInvite] = useState(false);
+
+  // Incoming Talent Links for Creators
+  const [talentLinks, setTalentLinks] = useState<any[]>([]);
+
+  const fetchStats = async () => {
+    setLoading(true);
+    try {
+      const res = await api.getDashboardStats();
+      if (res.data) {
+        setStats(res.data);
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to load dashboard metrics');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const partnerships: CampaignItem[] = [
-    {
-      id: 'CMP-1042',
-      brand: 'Nordic Audio Systems',
-      deliverable: 'YouTube 60s Integration + X Post',
-      budget: '$3,200.00',
-      status: 'In Review',
-      badgeVariant: 'warning',
-      dueDate: 'Oct 24, 2026',
-    },
-    {
-      id: 'CMP-1039',
-      brand: 'Prism Keyboards',
-      deliverable: 'TikTok 30s Desk Setup Reel',
-      budget: '$1,800.00',
-      status: 'Invoice Sent',
-      badgeVariant: 'brand',
-      dueDate: 'Oct 28, 2026',
-    },
-    {
-      id: 'CMP-1031',
-      brand: 'Apex Cloud Hosting',
-      deliverable: 'Dedicated Sponsored Video (10m)',
-      budget: '$5,500.00',
-      status: 'Paid',
-      badgeVariant: 'success',
-      dueDate: 'Oct 15, 2026',
-    },
-    {
-      id: 'CMP-1027',
-      brand: 'Flow Productivity App',
-      deliverable: 'Newsletter Sponsor Placement',
-      budget: '$950.00',
-      status: 'Brief Drafting',
-      badgeVariant: 'neutral',
-      dueDate: 'Nov 02, 2026',
-    },
-  ];
+  const fetchTalentLinks = async () => {
+    try {
+      const res = await api.getTalentLinks();
+      if (res.data) {
+        setTalentLinks(res.data);
+      }
+    } catch {
+      // Ignored for roles without link access
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+    if (user?.role === 'creator' || user?.role === 'talentManager') {
+      fetchTalentLinks();
+    }
+  }, [user?.role]);
+
+  const handleSendInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail.trim()) {
+      toast.error('Creator email is required');
+      return;
+    }
+
+    setSubmittingInvite(true);
+    try {
+      await api.inviteCreatorToRoster({
+        creatorEmail: inviteEmail.trim(),
+        notes: inviteNotes.trim() || undefined,
+      });
+      toast.success(`Representation invite sent to ${inviteEmail}`);
+      setIsInviteModalOpen(false);
+      setInviteEmail('');
+      setInviteNotes('');
+      fetchStats();
+      fetchTalentLinks();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send invite');
+    } finally {
+      setSubmittingInvite(false);
+    }
+  };
+
+  const handleRespondLink = async (id: string, action: 'accept' | 'decline') => {
+    try {
+      await api.respondToTalentLink(id, action);
+      toast.success(`Representation invite ${action}ed.`);
+      fetchTalentLinks();
+      fetchStats();
+    } catch (err: any) {
+      toast.error(err.message || `Failed to ${action} invite`);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-3">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground">Loading verified workspace data...</p>
+      </div>
+    );
+  }
+
+  const role = user?.role || 'creator';
+  const kpis = stats?.kpis || {};
 
   return (
-    <div className="space-y-6">
-      {/* Top Banner / Welcome */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-surface-200 dark:border-surface-800">
+    <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {/* Top Banner / Greeting */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-extrabold tracking-tight text-surface-900 dark:text-surface-50">
-              Workspace Dashboard
-            </h1>
-            <Badge variant="neutral" size="sm" className="bg-surface-200/80 dark:bg-surface-800 text-surface-700 dark:text-surface-300">
-              Sample data
-            </Badge>
-          </div>
-          <p className="text-xs text-surface-500 dark:text-surface-400 mt-1">
-            Manage campaign deliverables, collaboration requests, and invoice tracking.
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            Welcome back, {user?.name || 'Partner'}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Role: <span className="capitalize font-medium text-foreground">{role}</span> • Live workspace overview
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="primary"
-            size="sm"
-            leftIcon={<Plus className="w-4 h-4" />}
-            onClick={() => setIsModalOpen(true)}
-          >
-            New Campaign Brief
-          </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          {role === 'brand' && (
+            <Link to="/campaigns/new">
+              <Button size="sm" variant="primary">
+                <Plus className="w-4 h-4 mr-1.5" />
+                Create Campaign
+              </Button>
+            </Link>
+          )}
+
+          {role === 'talentManager' && (
+            <Button size="sm" variant="primary" onClick={() => setIsInviteModalOpen(true)}>
+              <UserPlus className="w-4 h-4 mr-1.5" />
+              Invite Creator to Roster
+            </Button>
+          )}
+
+          <Link to="/ai-assistant">
+            <Button size="sm" variant="outline">
+              <Sparkles className="w-4 h-4 mr-1.5 text-primary" />
+              AI Assistant
+            </Button>
+          </Link>
         </div>
       </div>
 
-      {/* Metric Cards Row */}
+      {/* Incoming Representation Invites for Creators */}
+      {role === 'creator' && talentLinks.some((l) => l.status === 'pending') && (
+        <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-primary" />
+            <h3 className="text-sm font-bold text-foreground">Agency Representation Inquiries</h3>
+          </div>
+          <div className="space-y-2">
+            {talentLinks
+              .filter((l) => l.status === 'pending')
+              .map((link) => (
+                <div
+                  key={link._id}
+                  className="bg-card border border-border rounded-lg p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                >
+                  <div>
+                    <h4 className="text-sm font-semibold text-foreground">
+                      {link.talentManager?.name}{' '}
+                      {link.talentManager?.orgName && (
+                        <span className="text-xs font-normal text-muted-foreground">
+                          ({link.talentManager.orgName})
+                        </span>
+                      )}
+                    </h4>
+                    {link.notes && <p className="text-xs text-muted-foreground mt-0.5">"{link.notes}"</p>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      onClick={() => handleRespondLink(link._id, 'accept')}
+                    >
+                      <Check className="w-4 h-4 mr-1" /> Accept
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleRespondLink(link._id, 'decline')}
+                    >
+                      <X className="w-4 h-4 mr-1" /> Decline
+                    </Button>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {/* Role-Specific KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card hover>
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between text-surface-500 text-xs font-semibold">
-              <span>Active Partnerships</span>
-              <span className="p-1.5 rounded-lg bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-400">
-                <FileText className="w-4 h-4" />
-              </span>
-            </div>
-            <p className="text-2xl font-extrabold text-surface-900 dark:text-surface-100 mt-2">
-              4 Campaigns
-            </p>
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-brand-600 dark:text-brand-400 font-medium">
-              <Sparkles className="w-3.5 h-3.5" /> 2 briefs awaiting sign-off
-            </div>
-          </CardContent>
-        </Card>
+        {role === 'brand' && (
+          <>
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Total Campaigns
+                  </p>
+                  <p className="text-2xl font-bold text-foreground mt-1">{kpis.totalCampaigns || 0}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {kpis.activeCampaigns || 0} active / open
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                  <Megaphone className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card hover>
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between text-surface-500 text-xs font-semibold">
-              <span>Invoices Outstanding</span>
-              <span className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400">
-                <Receipt className="w-4 h-4" />
-              </span>
-            </div>
-            <p className="text-2xl font-extrabold text-surface-900 dark:text-surface-100 mt-2">
-              $1,800.00
-            </p>
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 font-medium">
-              <Clock className="w-3.5 h-3.5" /> 1 invoice pending client settlement
-            </div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Pending Requests
+                  </p>
+                  <p className="text-2xl font-bold text-foreground mt-1">{kpis.pendingRequests || 0}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Awaiting creator or brand action</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                  <Clock className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card hover>
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between text-surface-500 text-xs font-semibold">
-              <span>Deliverables Pending</span>
-              <span className="p-1.5 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
-                <Clock className="w-4 h-4" />
-              </span>
-            </div>
-            <p className="text-2xl font-extrabold text-surface-900 dark:text-surface-100 mt-2">
-              2 Assets
-            </p>
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-surface-500 font-medium">
-              Next review deadline: 3 days
-            </div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Active Contracts
+                  </p>
+                  <p className="text-2xl font-bold text-foreground mt-1">{kpis.activeContracts || 0}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Legally signed agreements</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                  <FileCheck2 className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card hover>
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between text-surface-500 text-xs font-semibold">
-              <span>Total Contracted</span>
-              <span className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-                <DollarSign className="w-4 h-4" />
-              </span>
-            </div>
-            <p className="text-2xl font-extrabold text-surface-900 dark:text-surface-100 mt-2">
-              $11,450.00
-            </p>
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-              Across current active projects
-            </div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Submissions to Review
+                  </p>
+                  <p className="text-2xl font-bold text-foreground mt-1">
+                    {kpis.pendingSubmissionsCount || 0}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Deliverables pending approval</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                  <Eye className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
+
+        {role === 'creator' && (
+          <>
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Active Collaborations
+                  </p>
+                  <p className="text-2xl font-bold text-foreground mt-1">{kpis.activeContracts || 0}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {kpis.acceptedCollabs || 0} accepted requests
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                  <FileCheck2 className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Pending Requests
+                  </p>
+                  <p className="text-2xl font-bold text-foreground mt-1">{kpis.pendingRequests || 0}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Inbox inquiries</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                  <Clock className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Active Deliverables
+                  </p>
+                  <p className="text-2xl font-bold text-foreground mt-1">{kpis.activeTasks || 0}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {kpis.pendingSubmissions || 0} revisions requested
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                  <CheckSquare className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Contracted Value
+                  </p>
+                  <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+                    ${(kpis.totalEarningsTracked || 0).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Tracking only (no escrow)</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                  <DollarSign className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
+
+        {role === 'talentManager' && (
+          <>
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Managed Roster
+                  </p>
+                  <p className="text-2xl font-bold text-foreground mt-1">{kpis.rosterCount || 0}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Linked creator partners</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                  <Users className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Pending Invites
+                  </p>
+                  <p className="text-2xl font-bold text-foreground mt-1">{kpis.pendingInvites || 0}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Awaiting creator consent</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                  <Clock className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Roster Active Deals
+                  </p>
+                  <p className="text-2xl font-bold text-foreground mt-1">
+                    {kpis.activeRosterContracts || 0}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Signed client campaigns</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                  <FileCheck2 className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Agency Actions
+                  </p>
+                  <button
+                    onClick={() => setIsInviteModalOpen(true)}
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline mt-2"
+                  >
+                    <Plus className="w-4 h-4" /> Expand Roster
+                  </button>
+                  <p className="text-xs text-muted-foreground mt-0.5">Consent-based invite link</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                  <UserPlus className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
+
+        {(role === 'freelancer' || role === 'admin') && (
+          <>
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Active Tasks
+                  </p>
+                  <p className="text-2xl font-bold text-foreground mt-1">{kpis.activeTasks || 0}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">In Todo, Doing, Review</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                  <CheckSquare className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Completed Deliverables
+                  </p>
+                  <p className="text-2xl font-bold text-foreground mt-1">
+                    {kpis.completedTasks || 0}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Finished work items</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                  <Check className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Active Contracts
+                  </p>
+                  <p className="text-2xl font-bold text-foreground mt-1">
+                    {kpis.activeContracts || 0}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Involved collaborations</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                  <FileCheck2 className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Workspace
+                  </p>
+                  <Link
+                    to="/tasks"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline mt-2"
+                  >
+                    Go to Kanban Board <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <p className="text-xs text-muted-foreground mt-0.5">Collaborative tasks</p>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                  <Clock className="w-5 h-5" />
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
 
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="partnerships" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabTrigger value="partnerships">Active Partnerships</TabTrigger>
-          <TabTrigger value="deliverables">Deliverables & Review</TabTrigger>
-        </TabsList>
-
-        {/* Tab 1: Active Partnerships */}
-        <TabContent value="partnerships">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+      {/* Talent Manager Roster Section */}
+      {role === 'talentManager' && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Campaign Collaboration Roster</CardTitle>
+                <CardTitle className="text-lg">Managed Creator Roster</CardTitle>
                 <CardDescription>
-                  Current creator and brand partnership agreements with budget status.
+                  Creators represented by your agency with verified mutual consent.
                 </CardDescription>
               </div>
-              <Badge variant="neutral" size="sm">
-                4 Active
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Brand / Partner</TableHead>
-                    <TableHead>Deliverable Scope</TableHead>
-                    <TableHead>Budget</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Deadline</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {partnerships.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-3">
-                          <Avatar name={item.brand} size="sm" />
-                          <div>
-                            <p className="font-bold text-surface-900 dark:text-surface-100 text-xs">
-                              {item.brand}
-                            </p>
-                            <span className="text-[10px] text-surface-400 font-mono">
-                              {item.id}
-                            </span>
-                          </div>
-                        </div>
+              <Button size="sm" variant="outline" onClick={() => setIsInviteModalOpen(true)}>
+                <UserPlus className="w-4 h-4 mr-1.5" />
+                Invite Creator
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {stats.roster && stats.roster.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {stats.roster.map((item: any) => (
+                  <div
+                    key={item._id}
+                    className="bg-card border border-border rounded-xl p-4 flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center overflow-hidden">
+                        {item.creator?.avatarUrl ? (
+                          <img
+                            src={item.creator.avatarUrl}
+                            alt={item.creator.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          item.creator?.name?.charAt(0).toUpperCase()
+                        )}
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-semibold text-foreground">
+                          {item.creator?.name}
+                        </h4>
+                        <p className="text-xs text-muted-foreground">{item.creator?.email}</p>
+                      </div>
+                    </div>
+                    <Badge variant="success">Active</Badge>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground space-y-2">
+                <Users className="w-8 h-8 mx-auto text-muted-foreground" />
+                <p className="text-sm font-medium">No creators linked to your roster yet.</p>
+                <p className="text-xs">
+                  Click "Invite Creator to Roster" to send a consent-based invitation.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Recent Contracts / Deals Table */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg">Recent Agreements & Partnerships</CardTitle>
+              <CardDescription>
+                Verified collaboration contracts recorded in your workspace.
+              </CardDescription>
+            </div>
+            <Link to="/contracts" className="text-xs font-medium text-primary hover:underline">
+              View all contracts &rarr;
+            </Link>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {stats?.recentContracts && stats.recentContracts.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Partner</TableHead>
+                  <TableHead>Campaign</TableHead>
+                  <TableHead>Contract Value</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {stats.recentContracts.map((contract: any) => {
+                  const partner = role === 'brand' ? contract.creator : contract.brand;
+                  return (
+                    <TableRow key={contract._id}>
+                      <TableCell className="font-medium text-foreground">
+                        {partner?.name || 'Partner'}
                       </TableCell>
-                      <TableCell className="text-xs">{item.deliverable}</TableCell>
-                      <TableCell className="text-xs font-semibold">{item.budget}</TableCell>
+                      <TableCell>{contract.campaign?.title || 'Direct Partnership'}</TableCell>
+                      <TableCell className="font-semibold text-foreground">
+                        ${contract.budget?.toLocaleString() || '0'} USD
+                      </TableCell>
                       <TableCell>
-                        <Badge variant={item.badgeVariant} size="sm" dot>
-                          {item.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-xs text-surface-500">{item.dueDate}</TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            toast.info(`Viewing details for ${item.brand}`)
+                        <Badge
+                          variant={
+                            contract.status === 'signed'
+                              ? 'success'
+                              : contract.status === 'declined'
+                              ? 'neutral'
+                              : 'warning'
                           }
                         >
-                          Details
-                        </Button>
+                          {contract.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Link
+                          to={`/contracts/${contract._id}`}
+                          className="text-xs font-semibold text-primary hover:underline"
+                        >
+                          View Contract
+                        </Link>
                       </TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabContent>
-
-        {/* Tab 2: Deliverables */}
-        <TabContent value="deliverables">
-          <Card>
-            <CardHeader>
-              <CardTitle>Deliverable Asset Feedback Hub</CardTitle>
-              <CardDescription>
-                Submitted drafts, video cuts, and client feedback cycles.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 rounded-xl border border-surface-200 dark:border-surface-800 bg-surface-50/50 dark:bg-surface-900/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="warning" size="sm">Revision Requested</Badge>
-                    <span className="text-xs font-mono text-surface-400">#DEL-302</span>
-                  </div>
-                  <h4 className="text-sm font-bold text-surface-900 dark:text-surface-100">
-                    Nordic Audio Fall Campaign: 60s YouTube Integration Cut v2
-                  </h4>
-                  <p className="text-xs text-surface-600 dark:text-surface-400">
-                    Brand feedback: &quot;Please highlight the battery life benchmark in the on-screen lower third graphics.&quot;
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => toast.info('Launching preview modal')}
-                  >
-                    View Cut
+                  );
+                })}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-center py-10 space-y-2">
+              <FileCheck2 className="w-8 h-8 text-muted-foreground mx-auto" />
+              <p className="text-sm font-medium text-foreground">No contracts initiated yet</p>
+              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                {role === 'brand'
+                  ? 'Create a campaign or send collaboration requests to creators in Discover.'
+                  : 'Browse open campaigns or check your collaboration requests inbox to get started.'}
+              </p>
+              <div className="pt-2">
+                <Link to={role === 'brand' ? '/campaigns/new' : '/discover'}>
+                  <Button size="sm" variant="primary">
+                    {role === 'brand' ? 'Launch Campaign' : 'Discover Opportunities'}
                   </Button>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    leftIcon={<Send className="w-3.5 h-3.5" />}
-                    onClick={() => toast.success('Revision v3 submitted to brand reviewer')}
-                  >
-                    Upload Revision
-                  </Button>
-                </div>
+                </Link>
               </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-              <div className="p-4 rounded-xl border border-surface-200 dark:border-surface-800 bg-surface-50/50 dark:bg-surface-900/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="success" size="sm">Approved</Badge>
-                    <span className="text-xs font-mono text-surface-400">#DEL-298</span>
-                  </div>
-                  <h4 className="text-sm font-bold text-surface-900 dark:text-surface-100">
-                    Prism Keyboards Desk Setup Reel: Final 4K Render
-                  </h4>
-                  <p className="text-xs text-surface-600 dark:text-surface-400">
-                    Brand approved without revisions. Scheduled for publishing.
-                  </p>
-                </div>
-                <Badge variant="brand" size="sm">
-                  Ready for Publishing
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-        </TabContent>
-      </Tabs>
-
-      {/* New Campaign Brief Modal */}
+      {/* Invite Modal for Talent Managers */}
       <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Create Campaign Brief"
-        description="Establish partnership scope, deliverables, and budget tracking."
-        maxWidth="lg"
-        footer={
-          <>
-            <Button variant="ghost" size="sm" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleCreateCampaign}
-              leftIcon={<Sparkles className="w-4 h-4" />}
-            >
-              Generate Brief
-            </Button>
-          </>
-        }
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        title="Invite Creator to Agency Roster"
+        description="Send a formal representation invitation. The creator must explicitly accept to link their profile."
       >
-        <form onSubmit={handleCreateCampaign} className="space-y-4">
-          <Input
-            label="Campaign / Project Name"
-            placeholder="e.g. Q4 Wireless Headphone Review"
-            value={campaignTitle}
-            onChange={(e) => setCampaignTitle(e.target.value)}
-            required
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <form onSubmit={handleSendInvite} className="space-y-4">
+          <div>
+            <label htmlFor="invite-email" className="block text-xs font-medium text-foreground mb-1.5">
+              Creator Email Address
+            </label>
             <Input
-              label="Agreed Budget ($ USD)"
-              placeholder="e.g. 2500"
-              type="number"
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
+              id="invite-email"
+              type="email"
+              placeholder="creator@example.com"
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
               required
-            />
-            <Select
-              label="Collaboration Scope"
-              value={scopeType}
-              onChange={(e) => setScopeType(e.target.value)}
-              options={[
-                { value: 'video', label: 'YouTube Video Integration' },
-                { value: 'short', label: 'TikTok / Instagram Reels Bundle' },
-                { value: 'newsletter', label: 'Dedicated Newsletter Sponsor' },
-                { value: 'multi', label: 'Multi-Channel Package' },
-              ]}
             />
           </div>
 
-          <Textarea
-            label="Key Talking Points & Requirements"
-            placeholder="Outline product features to highlight, discount codes, FTC compliance tags, and rough cut delivery target..."
-            rows={3}
-            value={briefSummary}
-            onChange={(e) => setBriefSummary(e.target.value)}
-          />
+          <div>
+            <label htmlFor="invite-notes" className="block text-xs font-medium text-foreground mb-1.5">
+              Representation Terms / Personal Note (Optional)
+            </label>
+            <Textarea
+              id="invite-notes"
+              rows={3}
+              placeholder="e.g. We would love to represent you for upcoming brand deals and negotiate sponsorship rates on your behalf."
+              value={inviteNotes}
+              onChange={(e) => setInviteNotes(e.target.value)}
+              maxLength={300}
+            />
+          </div>
 
-          <div className="p-3 rounded-xl bg-surface-100 dark:bg-surface-850 border border-surface-200 dark:border-surface-800 text-xs text-surface-600 dark:text-surface-300 flex items-center gap-2">
-            <FileCheck2 className="w-4 h-4 text-brand-600 dark:text-brand-400 flex-shrink-0" />
-            <span>Invoice payment status is tracked through milestones in the Invoices & Payments module.</span>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsInviteModalOpen(false)}
+              disabled={submittingInvite}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" disabled={submittingInvite}>
+              {submittingInvite ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-1.5" />
+                  Sending Invite...
+                </>
+              ) : (
+                'Send Representation Invite'
+              )}
+            </Button>
           </div>
         </form>
       </Modal>
     </div>
   );
 };
+
+export default DashboardPage;

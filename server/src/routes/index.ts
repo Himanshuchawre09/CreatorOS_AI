@@ -12,6 +12,8 @@ import contractRoutes from './contract.routes';
 import taskRoutes from './task.routes';
 import submissionRoutes from './submission.routes';
 import aiRoutes from './ai.routes';
+import dashboardRoutes from './dashboard.routes';
+import talentLinkRoutes from './talentLink.routes';
 
 const apiRouter = Router();
 
@@ -29,6 +31,8 @@ apiRouter.use('/contracts', contractRoutes);
 apiRouter.use('/tasks', taskRoutes);
 apiRouter.use('/submissions', submissionRoutes);
 apiRouter.use('/ai', aiRoutes);
+apiRouter.use('/dashboard', dashboardRoutes);
+apiRouter.use('/talent-links', talentLinkRoutes);
 apiRouter.use('/', healthRoutes);
 
 export default apiRouter;

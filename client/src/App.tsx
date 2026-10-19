@@ -26,6 +26,7 @@ import { ContractDetailPage } from './pages/ContractDetailPage';
 import { TasksPage } from './pages/TasksPage';
 import { ContentReviewPage } from './pages/ContentReviewPage';
 import { AiAssistantPage } from './pages/AiAssistantPage';
+import { AdminPage } from './pages/AdminPage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
 import { DevComponentsPage } from './pages/DevComponentsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -102,6 +103,11 @@ export const App: React.FC = () => {
                       {/* Profile management role-guarded */}
                       <Route element={<RoleRoute allowedRoles={['creator', 'brand', 'freelancer', 'talentManager']} />}>
                         <Route path="/profile" element={<ProfilePage />} />
+                      </Route>
+
+                      {/* Admin Console Route */}
+                      <Route element={<RoleRoute allowedRoles={['admin']} />}>
+                        <Route path="/admin" element={<AdminPage />} />
                       </Route>
 
                       <Route path="/coming-soon" element={<ComingSoonPage />} />
