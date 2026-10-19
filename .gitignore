@@ -11,6 +11,8 @@ build/
 *.local
 uploads/
 server/uploads/
+coverage/
+server/coverage/
 
 # Logs
 npm-debug.log*

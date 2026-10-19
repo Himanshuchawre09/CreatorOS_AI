@@ -1,0 +1,788 @@
+{
+  "info": {
+    "name": "CreatorOS AI — API Collection",
+    "_postman_id": "c1f7b889-43a1-460d-8ea9-42b45e5f8842",
+    "description": "Comprehensive Postman collection for CreatorOS AI covering Authentication, Profiles, Campaigns, Collaboration Requests, Contracts, Tasks, Submissions, Messages, Notifications, Invoices, Calendar, Analytics, Reviews, AI Tools, and Admin endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Authentication",
+      "item": [
+        {
+          "name": "Register Creator",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sarah Chen\",\n  \"email\": \"sarah@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"role\": \"creator\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Register Brand",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Pulse Audio\",\n  \"email\": \"brand@example.com\",\n  \"password\": \"BrandPass123!\",\n  \"role\": \"brand\",\n  \"orgName\": \"Pulse Labs\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sarah@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User (Me)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Profiles & Portfolios",
+      "item": [
+        {
+          "name": "Get Own Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/profile/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["profile", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update Creator Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Sarah Chen Tech\",\n  \"bio\": \"Mechanical keyboard and desk tech deep dives.\",\n  \"niche\": \"Tech\",\n  \"location\": \"San Francisco, CA\",\n  \"languages\": [\"English\"],\n  \"contentTypes\": [\"Long-form\", \"Shorts\"],\n  \"platforms\": [\n    {\n      \"platform\": \"youtube\",\n      \"handle\": \"@sarahchen\",\n      \"url\": \"https://youtube.com/@sarahchen\",\n      \"followers\": 250000,\n      \"engagementRate\": 4.5\n    }\n  ],\n  \"isPublic\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/profile/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["profile", "me"]
+            }
+          }
+        },
+        {
+          "name": "Discover Creators",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/creators?q=tech&niche=Tech&page=1&limit=12",
+              "host": ["{{baseUrl}}"],
+              "path": ["creators"],
+              "query": [
+                { "key": "q", "value": "tech" },
+                { "key": "niche", "value": "Tech" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "12" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Portfolio Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Custom 65% Keyboard Build\",\n  \"description\": \"Comprehensive mechanical keyboard build and sound test.\",\n  \"type\": \"video\",\n  \"url\": \"https://youtube.com/watch?v=sample\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/portfolio",
+              "host": ["{{baseUrl}}"],
+              "path": ["portfolio"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Campaigns (Brand)",
+      "item": [
+        {
+          "name": "Create Campaign",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Studio Headphone Launch 2026\",\n  \"brief\": \"Seeking audiophile creators to review our new planar magnetic headphones.\",\n  \"goals\": [\"Drive pre-orders\", \"Showcase acoustic quality\"],\n  \"audience\": \"Desk setup enthusiasts and producers\",\n  \"deliverables\": [\n    {\n      \"type\": \"Dedicated YouTube Video\",\n      \"count\": 1,\n      \"details\": \"8-12 min detailed acoustic review\"\n    }\n  ],\n  \"budget\": 3000,\n  \"currency\": \"USD\",\n  \"deadline\": \"2026-11-30T00:00:00.000Z\",\n  \"status\": \"open\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/campaigns",
+              "host": ["{{baseUrl}}"],
+              "path": ["campaigns"]
+            }
+          }
+        },
+        {
+          "name": "List Campaigns",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/campaigns?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["campaigns"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Collaboration Requests",
+      "item": [
+        {
+          "name": "Send Collaboration Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"campaignId\": \"CAMPAIGN_ID_HERE\",\n  \"creatorId\": \"CREATOR_ID_HERE\",\n  \"pitch\": \"We would love to partner with you for our Studio Headphone Launch!\",\n  \"proposedRate\": 3000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["requests"]
+            }
+          }
+        },
+        {
+          "name": "List Collaboration Requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["requests"]
+            }
+          }
+        },
+        {
+          "name": "Respond to Request (Accept)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"accepted\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/requests/REQUEST_ID_HERE/respond",
+              "host": ["{{baseUrl}}"],
+              "path": ["requests", "REQUEST_ID_HERE", "respond"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Contracts",
+      "item": [
+        {
+          "name": "Get Contract",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/contracts/CONTRACT_ID_HERE",
+              "host": ["{{baseUrl}}"],
+              "path": ["contracts", "CONTRACT_ID_HERE"]
+            }
+          }
+        },
+        {
+          "name": "Sign Contract",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/contracts/CONTRACT_ID_HERE/sign",
+              "host": ["{{baseUrl}}"],
+              "path": ["contracts", "CONTRACT_ID_HERE", "sign"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Tasks & Workspace",
+      "item": [
+        {
+          "name": "List Tasks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tasks?collaborationId=COLLABORATION_REQUEST_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["tasks"],
+              "query": [
+                { "key": "collaborationId", "value": "COLLABORATION_REQUEST_ID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"collaborationRequest\": \"COLLABORATION_REQUEST_ID\",\n  \"title\": \"Script Draft & Sound Comparison Outline\",\n  \"description\": \"Write talking points highlighting acoustic drivers.\",\n  \"status\": \"todo\",\n  \"order\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["tasks"]
+            }
+          }
+        },
+        {
+          "name": "Update Task Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"doing\",\n  \"order\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/TASK_ID_HERE",
+              "host": ["{{baseUrl}}"],
+              "path": ["tasks", "TASK_ID_HERE"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Content Review & Submissions",
+      "item": [
+        {
+          "name": "Stream Deliverable File",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/submissions/SUBMISSION_ID_HERE/file",
+              "host": ["{{baseUrl}}"],
+              "path": ["submissions", "SUBMISSION_ID_HERE", "file"]
+            }
+          }
+        },
+        {
+          "name": "Review Submission (Approve)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\",\n  \"feedback\": \"Audio quality and test comparison are approved!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/submissions/SUBMISSION_ID_HERE/review",
+              "host": ["{{baseUrl}}"],
+              "path": ["submissions", "SUBMISSION_ID_HERE", "review"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Messaging & Notifications",
+      "item": [
+        {
+          "name": "List Conversations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages/conversations",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "conversations"]
+            }
+          }
+        },
+        {
+          "name": "Get Collaboration Messages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages?collaborationId=COLLABORATION_REQUEST_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages"],
+              "query": [
+                { "key": "collaborationId", "value": "COLLABORATION_REQUEST_ID" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"collaborationRequest\": \"COLLABORATION_REQUEST_ID\",\n  \"text\": \"Looking forward to filming the headphone review this weekend!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/messages",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages"]
+            }
+          }
+        },
+        {
+          "name": "List Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications"]
+            }
+          }
+        },
+        {
+          "name": "Mark All Notifications Read",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/mark-all-read",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "mark-all-read"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - Invoices & Payment Tracking",
+      "item": [
+        {
+          "name": "Create Invoice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"collaborationRequest\": \"COLLABORATION_REQUEST_ID\",\n  \"amount\": 3000,\n  \"currency\": \"USD\",\n  \"description\": \"Dedicated Headphone Review Video Production\",\n  \"dueDate\": \"2026-11-20T00:00:00.000Z\",\n  \"notes\": \"Payment via wire transfer upon brand verification.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/invoices",
+              "host": ["{{baseUrl}}"],
+              "path": ["invoices"]
+            }
+          }
+        },
+        {
+          "name": "List Invoices",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/invoices",
+              "host": ["{{baseUrl}}"],
+              "path": ["invoices"]
+            }
+          }
+        },
+        {
+          "name": "Update Invoice Status (Mark Paid)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"paid\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/invoices/INVOICE_ID_HERE/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["invoices", "INVOICE_ID_HERE", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Calendar, Analytics & Reviews",
+      "item": [
+        {
+          "name": "List Calendar Posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/calendar",
+              "host": ["{{baseUrl}}"],
+              "path": ["calendar"]
+            }
+          }
+        },
+        {
+          "name": "Create Calendar Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Headphone Review Video Live\",\n  \"platform\": \"youtube\",\n  \"scheduledDate\": \"2026-11-15T15:00:00.000Z\",\n  \"status\": \"scheduled\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/calendar",
+              "host": ["{{baseUrl}}"],
+              "path": ["calendar"]
+            }
+          }
+        },
+        {
+          "name": "Record Collaboration Metrics",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"collaborationRequest\": \"COLLABORATION_REQUEST_ID\",\n  \"views\": 45000,\n  \"reach\": 80000,\n  \"clicks\": 1200,\n  \"engagement\": 5400,\n  \"notes\": \"First 72-hour metrics recorded from YouTube Analytics.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/analytics",
+              "host": ["{{baseUrl}}"],
+              "path": ["analytics"]
+            }
+          }
+        },
+        {
+          "name": "Submit Mutual Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"collaborationRequest\": \"COLLABORATION_REQUEST_ID\",\n  \"rating\": 5,\n  \"comment\": \"Fantastic partnership! Fast approval and clear feedback.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["reviews"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 - AI Assistant (Gemini / Mock)",
+      "item": [
+        {
+          "name": "Get AI Provider Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ai/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "status"]
+            }
+          }
+        },
+        {
+          "name": "AI Match Recommendations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetType\": \"creator\",\n  \"criteria\": \"Looking for tech desk reviewers with 100k+ followers for headphone launch.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/recommend",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "recommend"]
+            }
+          }
+        },
+        {
+          "name": "AI Price Estimate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deliverableType\": \"Dedicated YouTube Video\",\n  \"followers\": 250000,\n  \"niche\": \"Tech\",\n  \"engagementRate\": 4.5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/price-estimate",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "price-estimate"]
+            }
+          }
+        },
+        {
+          "name": "AI Pitch Email Draft",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brandName\": \"Pulse Audio Labs\",\n  \"campaignTitle\": \"Studio Headphone Launch 2026\",\n  \"creatorNiche\": \"Tech & Mechanical Keyboards\",\n  \"keyTalkingPoints\": [\"Dual wireless low-latency dongle\", \"Planar magnetic drivers\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/email-draft",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "email-draft"]
+            }
+          }
+        },
+        {
+          "name": "AI Content Plan Generator",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"niche\": \"Mechanical Keyboards & Desk Setups\",\n  \"goal\": \"Grow subscriber retention and showcase acoustic sound tests.\",\n  \"platform\": \"youtube\",\n  \"count\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/content-plan",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "content-plan"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 - Admin Console",
+      "item": [
+        {
+          "name": "List Users (Admin Only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Platform Stats (Admin Only)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Toggle User Status (Admin Only)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"suspended\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/USER_ID_HERE/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "USER_ID_HERE", "status"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
