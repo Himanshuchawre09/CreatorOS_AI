@@ -12,3 +12,4 @@ export * from './submission.model';
 export * from './talentLink.model';
 export * from './notification.model';
 export * from './message.model';
+export * from './invoice.model';

@@ -16,6 +16,7 @@ import dashboardRoutes from './dashboard.routes';
 import talentLinkRoutes from './talentLink.routes';
 import notificationRoutes from './notification.routes';
 import messageRoutes from './message.routes';
+import invoiceRoutes from './invoice.routes';
 
 const apiRouter = Router();
 
@@ -37,6 +38,7 @@ apiRouter.use('/dashboard', dashboardRoutes);
 apiRouter.use('/talent-links', talentLinkRoutes);
 apiRouter.use('/notifications', notificationRoutes);
 apiRouter.use('/messages', messageRoutes);
+apiRouter.use('/invoices', invoiceRoutes);
 apiRouter.use('/', healthRoutes);
 
 export default apiRouter;

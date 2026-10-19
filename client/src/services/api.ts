@@ -770,6 +770,33 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ collaborationId, content }),
     }),
+
+  // Invoice Endpoints
+  getInvoices: (params?: {
+    status?: string;
+    collaborationId?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    const query = new URLSearchParams();
+    if (params?.status) query.set('status', params.status);
+    if (params?.collaborationId) query.set('collaborationId', params.collaborationId);
+    if (params?.page) query.set('page', String(params.page));
+    if (params?.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return fetchApi<InvoiceItem[]>(`/invoices${qs ? `?${qs}` : ''}`);
+  },
+  getInvoiceById: (id: string) => fetchApi<InvoiceItem>(`/invoices/${id}`),
+  createInvoice: (payload: CreateInvoicePayload) =>
+    fetchApi<InvoiceItem>('/invoices', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  updateInvoiceStatus: (id: string, status: 'sent' | 'paid' | 'cancelled') =>
+    fetchApi<InvoiceItem>(`/invoices/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    }),
 };
 
 export interface AIStatusData {
@@ -884,5 +911,47 @@ export interface ConversationItem {
   unreadCount: number;
   updatedAt: string;
 }
+
+export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+
+export interface InvoiceItem {
+  _id: string;
+  invoiceNumber: string;
+  collaborationRequest: any;
+  contract?: any;
+  issuer: {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+    orgName?: string;
+  };
+  client: {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+    orgName?: string;
+  };
+  amount: number;
+  currency: string;
+  description: string;
+  dueDate: string;
+  status: InvoiceStatus;
+  paidAt?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateInvoicePayload {
+  collaborationId: string;
+  amount: number;
+  currency?: string;
+  description: string;
+  dueDate: string;
+  notes?: string;
+}
+
 
 
