@@ -34,61 +34,244 @@ export const requiredHttpUrlSchema = z
     { message: 'URL must start with http:// or https:// and be a valid URL' }
   );
 
-export const platformSchema = z.object({
-  platform: z.enum(['youtube', 'instagram', 'tiktok', 'twitch', 'blog', 'other']),
-  handle: z.string().trim().min(1, 'Handle is required').max(100),
-  url: requiredHttpUrlSchema,
-  followers: z.coerce.number().min(0, 'Followers must be 0 or more').default(0),
-  engagementRate: z.coerce.number().min(0).max(100).optional(),
-});
+export const platformSchema = z
+  .object({
+    platform: z.enum(['youtube', 'instagram', 'tiktok', 'twitch', 'blog', 'other']),
+    handle: z.string().trim().min(1, 'Handle is required').max(100),
+    url: requiredHttpUrlSchema,
+    followers: z.coerce.number().min(0, 'Followers must be 0 or more').default(0),
+    engagementRate: z.coerce.number().min(0).max(100).optional(),
+  })
+  .strict();
 
-export const creatorProfileSchema = z.object({
-  displayName: z.string().trim().min(1, 'Display name is required').max(100),
-  bio: z.string().trim().max(500, 'Bio cannot exceed 500 characters').optional().default(''),
-  niche: z.string().trim().min(1, 'Niche is required').max(100),
-  platforms: z.array(platformSchema).default([]),
-  location: z.string().trim().max(100).optional().default(''),
-  languages: z.array(z.string().trim().max(50)).default([]),
-  contentTypes: z.array(z.string().trim().max(50)).default([]),
-  rateNotes: z.string().trim().max(500).optional().default(''),
-  avatarUrl: httpUrlSchema.optional().or(z.literal('')),
-  isPublic: z.boolean().default(true),
-});
+export const creatorProfileSchema = z
+  .object({
+    displayName: z.string().trim().min(1, 'Display name is required').max(100),
+    bio: z.string().trim().max(500, 'Bio cannot exceed 500 characters').optional().default(''),
+    niche: z.string().trim().min(1, 'Niche is required').max(100),
+    platforms: z.array(platformSchema).default([]),
+    location: z.string().trim().max(100).optional().default(''),
+    languages: z.array(z.string().trim().max(50)).default([]),
+    contentTypes: z.array(z.string().trim().max(50)).default([]),
+    rateNotes: z.string().trim().max(500).optional().default(''),
+    avatarUrl: httpUrlSchema.optional().or(z.literal('')),
+    isPublic: z.boolean().default(true),
+  })
+  .strict();
 
-export const brandProfileSchema = z.object({
-  companyName: z.string().trim().min(1, 'Company name is required').max(120),
-  industry: z.string().trim().min(1, 'Industry is required').max(100),
-  website: httpUrlSchema.optional().or(z.literal('')),
-  about: z.string().trim().max(800, 'About cannot exceed 800 characters').optional().default(''),
-  targetAudience: z.string().trim().max(500).optional().default(''),
-  logoUrl: httpUrlSchema.optional().or(z.literal('')),
-  isPublic: z.boolean().default(true),
-});
+export const brandProfileSchema = z
+  .object({
+    companyName: z.string().trim().min(1, 'Company name is required').max(120),
+    industry: z.string().trim().min(1, 'Industry is required').max(100),
+    website: httpUrlSchema.optional().or(z.literal('')),
+    about: z.string().trim().max(800, 'About cannot exceed 800 characters').optional().default(''),
+    targetAudience: z.string().trim().max(500).optional().default(''),
+    logoUrl: httpUrlSchema.optional().or(z.literal('')),
+    isPublic: z.boolean().default(true),
+  })
+  .strict();
 
-export const freelancerProfileSchema = z.object({
-  headline: z.string().trim().min(1, 'Headline is required').max(150),
-  skills: z.array(z.string().trim().max(50)).default([]),
-  bio: z.string().trim().max(800, 'Bio cannot exceed 800 characters').optional().default(''),
-  portfolioLinks: z.array(requiredHttpUrlSchema).default([]),
-  availability: z.enum(['available', 'busy']).default('available'),
-  hourlyRate: z.coerce.number().min(0).optional(),
-  isPublic: z.boolean().default(true),
-});
+export const freelancerProfileSchema = z
+  .object({
+    headline: z.string().trim().min(1, 'Headline is required').max(150),
+    skills: z.array(z.string().trim().max(50)).default([]),
+    bio: z.string().trim().max(800, 'Bio cannot exceed 800 characters').optional().default(''),
+    portfolioLinks: z.array(requiredHttpUrlSchema).default([]),
+    availability: z.enum(['available', 'busy']).default('available'),
+    hourlyRate: z.coerce.number().min(0).optional(),
+    isPublic: z.boolean().default(true),
+  })
+  .strict();
 
-export const talentManagerProfileSchema = z.object({
-  agencyName: z.string().trim().min(1, 'Agency name is required').max(120),
-  about: z.string().trim().max(800, 'About cannot exceed 800 characters').optional().default(''),
-  website: httpUrlSchema.optional().or(z.literal('')),
-  isPublic: z.boolean().default(true),
-});
+export const talentManagerProfileSchema = z
+  .object({
+    agencyName: z.string().trim().min(1, 'Agency name is required').max(120),
+    about: z.string().trim().max(800, 'About cannot exceed 800 characters').optional().default(''),
+    website: httpUrlSchema.optional().or(z.literal('')),
+    isPublic: z.boolean().default(true),
+  })
+  .strict();
 
-export const portfolioItemSchema = z.object({
-  title: z.string().trim().min(1, 'Title is required').max(150),
-  description: z.string().trim().max(1000).optional().default(''),
-  type: z.enum(['video', 'image', 'link', 'article']),
-  url: requiredHttpUrlSchema,
-  thumbnailUrl: httpUrlSchema.optional().or(z.literal('')),
-});
+export const portfolioItemSchema = z
+  .object({
+    title: z.string().trim().min(1, 'Title is required').max(150),
+    description: z.string().trim().max(1000).optional().default(''),
+    type: z.enum(['video', 'image', 'link', 'article']),
+    url: requiredHttpUrlSchema,
+    thumbnailUrl: httpUrlSchema.optional().or(z.literal('')),
+  })
+  .strict();
 
-export const portfolioUpdateSchema = portfolioItemSchema.partial();
+export const portfolioUpdateSchema = portfolioItemSchema.partial().strict();
 
+// Safe query param helpers ensuring plain primitives without operator injection
+const safeQueryString = (max = 100) =>
+  z
+    .any()
+    .superRefine((val, ctx) => {
+      if (val === undefined) return;
+      if (typeof val !== 'string') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Query parameter must be a string',
+        });
+        return;
+      }
+      if (val.length > max) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Query parameter cannot exceed ${max} characters`,
+        });
+      }
+    })
+    .transform((val) => (typeof val === 'string' ? val.trim() : undefined));
+
+const safeQueryNumber = (min = 0, max?: number) =>
+  z
+    .any()
+    .superRefine((val, ctx) => {
+      if (val === undefined) return;
+      if (typeof val === 'object' && val !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Query parameter must be a primitive number',
+        });
+        return;
+      }
+      const num = Number(val);
+      if (isNaN(num)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Query parameter must be a valid number',
+        });
+        return;
+      }
+      if (num < min) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Query parameter must be at least ${min}`,
+        });
+      }
+      if (max !== undefined && num > max) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Query parameter cannot exceed ${max}`,
+        });
+      }
+    })
+    .transform((val) => (val !== undefined ? Number(val) : undefined));
+
+export const creatorQuerySchema = z
+  .object({
+    q: safeQueryString(100),
+    niche: safeQueryString(100),
+    platform: z
+      .any()
+      .superRefine((val, ctx) => {
+        if (val === undefined) return;
+        if (typeof val !== 'string') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Query parameter platform must be a string',
+          });
+          return;
+        }
+        if (val.length > 50) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Platform parameter cannot exceed 50 characters',
+          });
+        }
+      })
+      .transform((val) => (typeof val === 'string' ? val.trim() : undefined)),
+    minFollowers: safeQueryNumber(0),
+    maxFollowers: safeQueryNumber(0),
+    page: z
+      .any()
+      .superRefine((val, ctx) => {
+        if (val === undefined) return;
+        if (typeof val === 'object' && val !== null) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Page parameter must be a primitive number',
+          });
+          return;
+        }
+        const num = Number(val);
+        if (isNaN(num) || num < 1) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Page must be a positive integer',
+          });
+        }
+      })
+      .transform((val) => (val !== undefined ? Math.max(1, parseInt(String(val), 10) || 1) : 1)),
+    limit: z
+      .any()
+      .superRefine((val, ctx) => {
+        if (val === undefined) return;
+        if (typeof val === 'object' && val !== null) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Limit parameter must be a primitive number',
+          });
+          return;
+        }
+        const num = Number(val);
+        if (isNaN(num) || num < 1 || num > 24) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Limit must be between 1 and 24',
+          });
+        }
+      })
+      .transform((val) => (val !== undefined ? Math.min(24, Math.max(1, parseInt(String(val), 10) || 12)) : 12)),
+  })
+  .strict();
+
+export const brandQuerySchema = z
+  .object({
+    q: safeQueryString(100),
+    industry: safeQueryString(100),
+    page: z
+      .any()
+      .superRefine((val, ctx) => {
+        if (val === undefined) return;
+        if (typeof val === 'object' && val !== null) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Page parameter must be a primitive number',
+          });
+          return;
+        }
+        const num = Number(val);
+        if (isNaN(num) || num < 1) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Page must be a positive integer',
+          });
+        }
+      })
+      .transform((val) => (val !== undefined ? Math.max(1, parseInt(String(val), 10) || 1) : 1)),
+    limit: z
+      .any()
+      .superRefine((val, ctx) => {
+        if (val === undefined) return;
+        if (typeof val === 'object' && val !== null) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Limit parameter must be a primitive number',
+          });
+          return;
+        }
+        const num = Number(val);
+        if (isNaN(num) || num < 1 || num > 24) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Limit must be between 1 and 24',
+          });
+        }
+      })
+      .transform((val) => (val !== undefined ? Math.min(24, Math.max(1, parseInt(String(val), 10) || 12)) : 12)),
+  })
+  .strict();

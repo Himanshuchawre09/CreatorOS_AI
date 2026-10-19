@@ -7,7 +7,17 @@ import { logger } from '../utils/logger';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
-const DEMO_PASSWORD = process.env.DEMO_PASSWORD || process.env.ADMIN_PASSWORD || 'DemoSecret123!';
+const isProduction = (process.env.NODE_ENV || '').toLowerCase() === 'production';
+if (isProduction) {
+  logger.error('Error: seed:demo cannot be run in a production environment.');
+  process.exit(1);
+}
+
+const DEMO_PASSWORD = process.env.DEMO_PASSWORD;
+if (!DEMO_PASSWORD) {
+  logger.error('Error: DEMO_PASSWORD environment variable is required to run seed:demo.');
+  process.exit(1);
+}
 
 const seedDemo = async (): Promise<void> => {
   try {

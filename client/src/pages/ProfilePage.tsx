@@ -604,9 +604,9 @@ export const ProfilePage: React.FC = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Connected Platforms & Metrics</CardTitle>
+                <CardTitle>Connected Platforms & Metrics <span className="text-xs font-normal text-surface-400 lowercase">(self-reported)</span></CardTitle>
                 <CardDescription>
-                  List your channel handles, links, and audience counts.
+                  List your channel handles, links, and audience counts (self-reported figures).
                 </CardDescription>
               </div>
               <Button
@@ -666,7 +666,7 @@ export const ProfilePage: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <Input
-                        label="Followers"
+                        label="Followers (self-reported)"
                         type="number"
                         value={p.followers}
                         onChange={(e) => handlePlatformChange(idx, 'followers', Number(e.target.value))}

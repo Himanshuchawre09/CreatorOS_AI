@@ -399,5 +399,85 @@ describe('Phase 2 - Profiles, Portfolios & Discovery Suite', () => {
     expect(JSON.stringify(brandDetail.body)).not.toContain('brand_secret@test.com');
     expect(JSON.stringify(brandDetail.body)).not.toContain('passwordHash');
   });
+
+  it('operator-injection query is rejected with 400', async () => {
+    // Attempting query parameter injection with mongo operator objects
+    const resOperatorNiche = await request(app).get('/api/creators?niche[$ne]=Tech');
+    expect(resOperatorNiche.status).toBe(400);
+
+    const resOperatorFollowers = await request(app).get('/api/creators?minFollowers[$gt]=0');
+    expect(resOperatorFollowers.status).toBe(400);
+
+    const resOperatorBrand = await request(app).get('/api/brands?industry[$ne]=Fashion');
+    expect(resOperatorBrand.status).toBe(400);
+
+    const resUnknownParam = await request(app).get('/api/creators?maliciousField[$ne]=true');
+    expect(resUnknownParam.status).toBe(400);
+  });
+
+  it('unknown body field is rejected with 400 via strict schema', async () => {
+    const { cookie } = await registerUser('creator', 'strict_body@test.com');
+
+    // Attempt to pass unknown/forbidden field into profile update
+    const resProfile = await request(app)
+      .put('/api/profile/me')
+      .set('Cookie', cookie)
+      .send({
+        displayName: 'Strict Creator',
+        niche: 'Tech',
+        platforms: [],
+        totalFollowers: 999999, // Should be rejected by .strict()
+        role: 'admin',          // Should be rejected by .strict()
+      });
+    expect(resProfile.status).toBe(400);
+
+    // Attempt to pass unknown field into portfolio item create
+    const resPortfolio = await request(app)
+      .post('/api/portfolio')
+      .set('Cookie', cookie)
+      .send({
+        title: 'Strict Portfolio Item',
+        type: 'video',
+        url: 'https://youtube.com/watch?v=strict1',
+        owner: '6ad53e051c9185c10da61099', // Owner cannot be injected
+      });
+    expect(resPortfolio.status).toBe(400);
+  });
+
+  it('owner can view their own private profile with 200 while others get 404', async () => {
+    const { cookie: ownerCookie, user: owner } = await registerUser('creator', 'owner_private@test.com', 'Private Creator');
+    const updateRes = await request(app)
+      .put('/api/profile/me')
+      .set('Cookie', ownerCookie)
+      .send({
+        displayName: 'Private Creator',
+        niche: 'Art',
+        platforms: [],
+        isPublic: false,
+      });
+
+    const profileId = updateRes.body.profile._id;
+
+    // Owner requesting own profile via /api/creators/:id receives 200
+    const ownerRes = await request(app)
+      .get(`/api/creators/${profileId}`)
+      .set('Cookie', ownerCookie);
+
+    expect(ownerRes.status).toBe(200);
+    expect(ownerRes.body.success).toBe(true);
+    expect(ownerRes.body.creator.displayName).toBe('Private Creator');
+
+    // Guest without cookie receives 404
+    const guestRes = await request(app).get(`/api/creators/${profileId}`);
+    expect(guestRes.status).toBe(404);
+
+    // Another user receives 404
+    const { cookie: otherCookie } = await registerUser('brand', 'brand_viewer@test.com');
+    const otherRes = await request(app)
+      .get(`/api/creators/${profileId}`)
+      .set('Cookie', otherCookie);
+    expect(otherRes.status).toBe(404);
+  });
 });
+
 

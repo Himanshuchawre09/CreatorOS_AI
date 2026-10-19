@@ -270,7 +270,7 @@ export const RegisterPage: React.FC = () => {
                 <Input
                   label="Password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="At least 8 chars with letter & number"
+                  placeholder="Min. 8 characters"
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);

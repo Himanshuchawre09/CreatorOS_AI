@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import { BrandProfile } from '../models';
 import { AppError } from '../utils/AppError';
+import { brandQuerySchema } from '../validations/profile.validation';
+import { escapeRegex } from '../utils/sanitize';
 
 export const getBrands = async (
   req: Request,
@@ -9,20 +11,21 @@ export const getBrands = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { q, industry, page = '1', limit = '12' } = req.query;
+    const validatedQuery = brandQuerySchema.parse(req.query);
+    const { q, industry, page, limit } = validatedQuery;
 
-    const pageNum = Math.max(1, parseInt(page as string, 10) || 1);
-    const limitNum = Math.min(24, Math.max(1, parseInt(limit as string, 10) || 12));
+    const pageNum = page ?? 1;
+    const limitNum = limit ?? 12;
     const skip = (pageNum - 1) * limitNum;
 
     const filter: Record<string, any> = { isPublic: true };
 
-    if (industry && typeof industry === 'string' && industry.trim()) {
-      filter.industry = { $regex: new RegExp(`^${industry.trim()}$`, 'i') };
+    if (industry && industry.trim()) {
+      filter.industry = { $regex: new RegExp(`^${escapeRegex(industry.trim())}$`, 'i') };
     }
 
-    if (q && typeof q === 'string' && q.trim()) {
-      const searchRegex = new RegExp(q.trim(), 'i');
+    if (q && q.trim()) {
+      const searchRegex = new RegExp(escapeRegex(q.trim()), 'i');
       filter.$or = [
         { companyName: searchRegex },
         { about: searchRegex },
@@ -89,4 +92,3 @@ export const getBrandById = async (
     next(error);
   }
 };
-

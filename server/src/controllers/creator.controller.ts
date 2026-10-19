@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import { CreatorProfile, PortfolioItem } from '../models';
 import { AppError } from '../utils/AppError';
+import { creatorQuerySchema } from '../validations/profile.validation';
+import { escapeRegex } from '../utils/sanitize';
 
 export const getCreators = async (
   req: Request,
@@ -9,46 +11,44 @@ export const getCreators = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const validatedQuery = creatorQuerySchema.parse(req.query);
     const {
       q,
       niche,
       platform,
       minFollowers,
       maxFollowers,
-      page = '1',
-      limit = '12',
-    } = req.query;
+      page,
+      limit,
+    } = validatedQuery;
 
-    const pageNum = Math.max(1, parseInt(page as string, 10) || 1);
-    const limitNum = Math.min(24, Math.max(1, parseInt(limit as string, 10) || 12));
+    const pageNum = page ?? 1;
+    const limitNum = limit ?? 12;
     const skip = (pageNum - 1) * limitNum;
 
     // Filter strictly by isPublic: true
     const filter: Record<string, any> = { isPublic: true };
 
-    if (niche && typeof niche === 'string' && niche.trim()) {
-      filter.niche = { $regex: new RegExp(`^${niche.trim()}$`, 'i') };
+    if (niche && niche.trim()) {
+      filter.niche = { $regex: new RegExp(`^${escapeRegex(niche.trim())}$`, 'i') };
     }
 
-    if (platform && typeof platform === 'string' && platform.trim()) {
+    if (platform && platform.trim()) {
       filter['platforms.platform'] = platform.trim().toLowerCase();
     }
 
-    const minF = minFollowers ? Number(minFollowers) : undefined;
-    const maxF = maxFollowers ? Number(maxFollowers) : undefined;
-
-    if (minF !== undefined || maxF !== undefined) {
+    if (minFollowers !== undefined || maxFollowers !== undefined) {
       filter.totalFollowers = {};
-      if (minF !== undefined && !isNaN(minF)) {
-        filter.totalFollowers.$gte = minF;
+      if (minFollowers !== undefined) {
+        filter.totalFollowers.$gte = minFollowers;
       }
-      if (maxF !== undefined && !isNaN(maxF)) {
-        filter.totalFollowers.$lte = maxF;
+      if (maxFollowers !== undefined) {
+        filter.totalFollowers.$lte = maxFollowers;
       }
     }
 
-    if (q && typeof q === 'string' && q.trim()) {
-      const searchRegex = new RegExp(q.trim(), 'i');
+    if (q && q.trim()) {
+      const searchRegex = new RegExp(escapeRegex(q.trim()), 'i');
       filter.$or = [
         { displayName: searchRegex },
         { bio: searchRegex },
@@ -123,4 +123,3 @@ export const getCreatorById = async (
     next(error);
   }
 };
-

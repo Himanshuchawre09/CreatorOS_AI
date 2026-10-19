@@ -145,7 +145,7 @@ export const CreatorDetailPage: React.FC = () => {
         <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 pt-4 sm:pt-0 border-t sm:border-t-0 border-surface-100 dark:border-surface-800 flex-shrink-0">
           <div className="text-left sm:text-right">
             <span className="text-[10px] uppercase font-bold text-surface-400 block">
-              Total Audience
+              Total Audience <span className="text-[9px] font-normal lowercase text-surface-400">(self-reported)</span>
             </span>
             <span className="text-lg font-black text-surface-900 dark:text-surface-50">
               {formatFollowers(creator.totalFollowers)}
@@ -171,7 +171,7 @@ export const CreatorDetailPage: React.FC = () => {
       {creator.platforms && creator.platforms.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Audience & Platform Reach</CardTitle>
+            <CardTitle>Audience & Platform Reach <span className="text-xs font-normal text-surface-400 lowercase">(self-reported)</span></CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">

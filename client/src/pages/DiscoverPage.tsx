@@ -381,7 +381,7 @@ export const DiscoverPage: React.FC = () => {
                   <div className="pt-3 border-t border-surface-100 dark:border-surface-850 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] uppercase font-bold text-surface-400 block">
-                        Total Reach
+                        Total Reach <span className="text-[9px] font-normal lowercase text-surface-400">(self-reported)</span>
                       </span>
                       <span className="text-xs font-bold text-surface-900 dark:text-surface-100">
                         {formatFollowers(creator.totalFollowers)}
