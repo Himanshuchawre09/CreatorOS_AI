@@ -9,6 +9,7 @@ import { AppShell } from './components/layout/AppShell';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { PublicOnlyRoute } from './components/auth/PublicOnlyRoute';
 import { RoleRoute } from './components/auth/RoleRoute';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -52,7 +53,8 @@ export const App: React.FC = () => {
         <AuthProvider>
           <RoleProvider>
             <ToastProvider>
-              <BrowserRouter>
+              <ErrorBoundary>
+                <BrowserRouter>
                 <Routes>
                   {/* Public SaaS Showcase & Marketing */}
                   <Route path="/" element={<LandingPage />} />
@@ -136,7 +138,8 @@ export const App: React.FC = () => {
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </BrowserRouter>
-            </ToastProvider>
+            </ErrorBoundary>
+          </ToastProvider>
           </RoleProvider>
         </AuthProvider>
       </ThemeProvider>

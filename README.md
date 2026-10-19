@@ -1,6 +1,6 @@
 # CreatorOS AI — Creator-Brand Collaboration Platform
 
-A modern, full-stack operating system for creator-brand partnerships, structured campaign briefs, deliverable approvals, and invoice status tracking.
+A full-stack, enterprise-grade operating system designed for creator-brand partnerships. CreatorOS AI streamlines the end-to-end collaboration lifecycle: structured campaign briefs, discovery, collaboration proposals, legal agreements, Kanban workspace execution, secure content deliverable review, invoice status tracking, self-reported performance analytics, and Gemini-powered creator intelligence.
 
 ---
 
@@ -10,38 +10,51 @@ A modern, full-stack operating system for creator-brand partnerships, structured
 ├── client/                     # Frontend (React 18, Vite, TypeScript, Tailwind CSS)
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── layout/         # AppShell, Sidebar, TopBar, MobileNav
+│   │   │   ├── auth/           # ProtectedRoute, PublicOnlyRoute, RoleRoute
+│   │   │   ├── collaboration/  # SendRequestModal
+│   │   │   ├── common/         # ErrorBoundary (accessible crash fallback)
+│   │   │   ├── layout/         # AppShell, Sidebar, TopBar, MobileNav, navigation config
+│   │   │   ├── profile/        # PortfolioManager (CRUD media items)
 │   │   │   └── ui/             # Button, Input, Select, Textarea, Card, Badge, Modal,
 │   │   │                       # Tabs, Table, Avatar, Skeleton, EmptyState, ThemeToggle
-│   │   ├── context/            # ThemeContext (dark/light), ToastContext (notifications)
-│   │   ├── pages/              # LandingPage, LoginPage, RegisterPage, DashboardPage, NotFound
-│   │   ├── services/           # Type-safe API client (GET /api/health)
+│   │   ├── context/            # AuthContext, RoleContext, ThemeContext, ToastContext
+│   │   ├── pages/              # 26 page components (Dashboard, Campaigns, Contracts, Tasks,
+│   │   │                       # ContentReview, Invoices, Calendar, Analytics, Reviews,
+│   │   │                       # AiAssistant, Admin, Discover, Profile, etc.)
+│   │   ├── services/           # Type-safe API client with fetcher utilities
 │   │   ├── lib/                # Class utilities (cn / clsx / tailwind-merge)
 │   │   ├── styles/             # Tailwind directives & CSS variables
 │   │   ├── App.tsx             # React Router routing & TanStack Query provider
 │   │   └── main.tsx            # React application entry
 │   ├── .env.example            # Client environment variables template
 │   ├── tailwind.config.ts      # Custom brand palette, typography, shadows, dark mode
-│   └── vite.config.ts          # Vite build configuration with API reverse proxy
+│   └── vite.config.ts          # Vite build configuration with reverse proxy
 │
 ├── server/                     # Backend API (Node.js, Express, TypeScript, Mongoose, Zod)
 │   ├── src/
 │   │   ├── config/             # Mongoose db connection, Zod-validated env config
-│   │   ├── controllers/        # Health check controller
-│   │   ├── middleware/         # Central error handler, Zod request validator
-│   │   ├── models/             # User model schema (Phase 0 placeholder for Phase 1 auth)
-│   │   ├── routes/             # Health routes & main API index
-│   │   ├── services/           # System diagnostics and health status service
+│   │   ├── controllers/        # Health, Auth, Profiles, Campaigns, Requests, Contracts,
+│   │   │                       # Tasks, Submissions, Notifications, Messages, Invoices,
+│   │   │                       # Calendar, Analytics, Reviews, AI, and Admin controllers
+│   │   ├── middleware/         # Authenticate (JWT cookie), Authorize (roles), RateLimiter,
+│   │   │                       # Central error handler, Zod request validator
+│   │   ├── models/             # 16 Mongoose models & schemas
+│   │   ├── routes/             # Express API routes
+│   │   ├── scripts/            # seedAdmin.ts, seedDemo.ts (guarded seed utilities)
+│   │   ├── services/           # ai.service.ts (Gemini + MockProvider), health service
 │   │   ├── utils/              # AppError operational errors class, structured logger
-│   │   ├── app.ts              # Express application factory with CORS
+│   │   ├── app.ts              # Express application factory with Helmet & CORS
 │   │   └── server.ts           # Server bootstrap and graceful shutdown handler
+│   ├── tests/                  # 12 Vitest integration test suites with Supertest & mongodb-memory-server
 │   ├── .env.example            # Server environment variables template
 │   └── tsconfig.json           # Server TypeScript configuration
 │
+├── testing/                    # Test evidence, scenario matrix & Postman collections
 ├── package.json                # Monorepo workspaces & concurrent script runner
+├── .gitattributes              # Consistent LF line-ending normalization
 ├── .gitignore                  # Git ignore rules protecting .env and build files
-├── .env.example                # Root environment reference
-└── README.md                   # Quickstart and developer documentation
+├── PROGRESS.md                 # Granular phase-by-phase implementation checklist
+└── README.md                   # Full system documentation and operational guide
 ```
 
 ---
@@ -50,130 +63,155 @@ A modern, full-stack operating system for creator-brand partnerships, structured
 
 ### Client
 - **Framework:** React 18 + Vite + TypeScript
-- **Styling & Design System:** Tailwind CSS with custom palette (Violet `brand`, Coral `accent`, Slate `surface`), dark mode support (`class`), and consistent radius/shadow tokens
-- **Typography:** Plus Jakarta Sans & Inter
-- **Routing:** React Router DOM (v6)
-- **Data Fetching:** TanStack Query (`@tanstack/react-query`)
+- **Styling & Design System:** Tailwind CSS with custom palette (Violet `brand`, Coral `accent`, Slate `surface`), accessible light/dark mode support, responsive mobile navigation (390px+ width verified)
+- **Data Fetching:** TanStack Query (`@tanstack/react-query`) with stale-while-revalidate caching
+- **Visualization:** Recharts (`recharts` + `react-is`) for self-reported campaign performance analytics
 - **Icons:** Lucide React (`lucide-react`)
-- **Utilities:** `clsx`, `tailwind-merge`
+- **Error Handling:** React `ErrorBoundary` with reset mechanism and accessible fallback UI
 
 ### Server
 - **Runtime:** Node.js (v18+) + Express + TypeScript
-- **Database:** MongoDB with Mongoose ODM (gracefully handles offline DB with degraded status)
-- **Validation:** Zod schema validation
-- **Dev Runner:** `tsx` for fast TypeScript compilation and hot-reloading
-- **Error Handling:** Central operational error handling (`AppError`), Mongoose error translation, Zod error normalization
+- **Database:** MongoDB with Mongoose ODM (offline-tolerant boot)
+- **Validation:** Zod schema validation for all request bodies (`.strict()`) and query parameters
+- **Authentication:** JWT stored in httpOnly, SameSite=Lax, Secure cookies; bcrypt (cost factor 12)
+- **Security:** Helmet headers, CORS credentials protection, strict rate limiting on authentication routes
+- **File Uploads:** Multer with disk storage outside web root, file signature (magic byte) verification, and authenticated participant-only streaming endpoint
+- **AI Engine:** Google Gemini API (`@google/generative-ai`) with deterministic MockProvider fallback
+- **Testing:** Vitest + Supertest + `mongodb-memory-server` (126+ automated tests)
 
 ---
 
 ## Quickstart
 
 ### Prerequisites
-- Node.js `v18.x` or higher (`v24.x` tested)
-- npm `v9.x` or higher (`v12.x` tested)
-- MongoDB (optional for Phase 0; server boots and serves health metrics even if DB is offline)
+- Node.js `v18.x` or higher (`v24.x` verified)
+- npm `v9.x` or higher
+- MongoDB instance (local or MongoDB Atlas connection string)
 
 ### 1. Install Dependencies
-
-You can install all dependencies from the root monorepo or individually:
-
+From the repository root:
 ```bash
-# From the root directory:
 npm run install:all
 ```
-
 Or install separately:
 ```bash
-# Server
-cd server
-npm install
-
-# Client
-cd ../client
-npm install
+cd server && npm install
+cd ../client && npm install
 ```
 
 ### 2. Configure Environment Variables
 
-Both apps include `.env.example` templates. Default development values are pre-configured:
+Create `.env` in `/server` and `/client` based on the respective `.env.example` templates:
 
+#### Server (`server/.env`)
 ```bash
-# Server environment (.env)
 PORT=5000
 NODE_ENV=development
 CLIENT_URL=http://localhost:5173
 MONGODB_URI=mongodb://localhost:27017/creatoros
-JWT_SECRET=super_secret_creatoros_development_jwt_key_32bytes
+JWT_SECRET=super_secret_creatoros_development_jwt_key_32bytes_min
 JWT_EXPIRES_IN=7d
 
-# Client environment (.env)
+# Optional: Google Gemini AI API key (MockProvider is used automatically if omitted)
+GEMINI_API_KEY=
+
+# Seed Scripts Configuration
+ADMIN_EMAIL=admin@creatoros.internal
+ADMIN_PASSWORD=AdminSecurePass123!
+DEMO_PASSWORD=DemoPassword123!
+```
+
+#### Client (`client/.env`)
+```bash
 VITE_API_BASE_URL=http://localhost:5000/api
 ```
 
-### 3. Run Development Servers
+### 3. Database Seeding (Optional)
+Seed an initial administrative account and rich sample workspace demo data:
+```bash
+cd server
 
-#### Option A: Run Both Simultaneously (Recommended)
+# Create or verify the admin user (never prints passwords)
+npm run seed:admin
+
+# Populate demo creators, brands, campaigns, contracts, and collaboration workflows
+npm run seed:demo
+```
+> **Security Guard:** `seed:demo` is strictly blocked in production environments (`NODE_ENV=production`) and requires `DEMO_PASSWORD` to be explicitly defined.
+
+### 4. Run Development Servers
 From the root directory:
 ```bash
 npm run dev
 ```
-This runs the Express API server on `http://localhost:5000` and the Vite client on `http://localhost:5173` concurrently.
-
-#### Option B: Run Individually
-In separate terminal tabs:
-
-**Terminal 1 (Server):**
-```bash
-cd server
-npm run dev
-```
-
-**Terminal 2 (Client):**
-```bash
-cd client
-npm run dev
-```
+- Client runs on `http://localhost:5173`
+- Server API runs on `http://localhost:5000`
 
 ---
 
-## Available Endpoints & Routes
+## Available Scripts
 
-### Backend API
-- `GET /` — API identification and status
-- `GET /api/health` — Detailed health check (returns status, uptime, database connection state, heap memory usage)
-
-### Frontend Application
-- `/` — Production-grade SaaS Landing Page (Hero, Features, Workflow, Role tabs, AI Tools, Footer)
-- `/login` — Sign in placeholder with design system inputs
-- `/register` — Workspace registration with role selector (Creator, Brand, Freelancer, Agency)
-- `/dashboard` — App shell with collapsible sidebar, top bar, dark mode toggle, live backend health badge, interactive modal, metric cards, deliverables table, and toast notification tester
-
----
-
-## Building for Production
-
-To compile and produce production bundles:
-
-```bash
-# From root
-npm run build
-
-# Or individually
-cd server && npm run build
-cd client && npm run build
-```
+| Command | Working Directory | Description |
+|---|---|---|
+| `npm run dev` | Root | Concurrently runs backend API and frontend Vite server |
+| `npm run build` | Root | Compiles TypeScript and builds production bundles for both client and server |
+| `npm test` | Root / `server` | Runs all 12 Vitest backend test suites with Supertest and in-memory MongoDB |
+| `npm run test:coverage` | `server` | Generates detailed code coverage reports with Vitest |
+| `npm run seed:admin` | `server` | Seeds initial admin account from `ADMIN_EMAIL` and `ADMIN_PASSWORD` |
+| `npm run seed:demo` | `server` | Seeds realistic demo accounts, campaigns, contracts, and deliverables |
 
 ---
 
-## Phase 0 Foundation Deliverables Check
+## Feature Status Table
 
-- [x] Monorepo scaffold (`/client` and `/server`)
-- [x] Express app with `GET /api/health`, central error handler, CORS, Mongoose connection, and modular structure
-- [x] Distinctive brand palette (deep violet + warm coral accent, not default blue)
-- [x] Dark mode support with persistent toggle and system preference detection
-- [x] 13 Reusable UI components: Button, Input, Select, Textarea, Card, Badge, Modal, Tabs, Table, Avatar, Skeleton loader, EmptyState, Toast
-- [x] Responsive App Shell with collapsible sidebar, top bar, and mobile navigation drawer
-- [x] Authentic SaaS landing page with zero lorem ipsum and zero fake statistics/testimonials
-- [x] Secrets segregated in `.env` and `.env.example` with `.env` in `.gitignore`
-- [x] Clean TypeScript builds (`tsc`) without any compiler or lint errors
+| Area / Module | Feature Description | Status | Implementation Details |
+|---|---|---|---|
+| **0. Auth & Authorization** | Cookie-based JWT auth, bcrypt cost 12, role-based middleware (`creator`, `brand`, `freelancer`, `talentManager`, `admin`), suspended status check | **Implemented** | Authenticate & authorize middleware, strict rate limiting, 403 on suspended, SameSite=Lax cookie |
+| **1. Profiles & Discovery** | Multi-role profiles, creator discovery with search & filter, portfolio item CRUD, "self-reported" metrics | **Implemented** | Text search index, follower/engagement filters, sanitization, owner-only edits |
+| **2. Campaigns** | Brand campaign management (title, brief, goals, deliverables, budget, deadline, legal status machine) | **Implemented** | Brand CRUD, public open campaigns for creators, status validation |
+| **3. Collaboration Requests** | Two-way requests: Brand to Creator invitation, Creator to Open Campaign application | **Implemented** | Strict state machine (`pending` -> `accepted` \| `rejected` \| `withdrawn`), duplicate prevention |
+| **4. Contracts** | Auto-generated legal agreement upon request acceptance, dual-signature flow, legal disclaimer | **Implemented** | Dual-signing flow (`draft` -> `sent` -> `signed`), "Simple agreement record, not legal advice" footer |
+| **5. Tasks & Workspace** | Kanban board per collaboration (`todo`, `doing`, `review`, `done`), assignee management | **Implemented** | Participant-guarded routes, drag/reorder support, real-time board updates |
+| **6. Content Review** | File submission with magic-byte verification, private streaming route, revision feedback loop | **Implemented** | 25MB cap, random disk filenames, non-public streaming endpoint, version history |
+| **7. Notifications & Messages** | Event-driven notification dropdown with unread badge; 10s polling chat per collaboration | **Implemented** | Participant-only chat thread, 1,000 char cap, read/unread states, zero websockets |
+| **8. Invoices & Payments** | Invoice status tracking (`draft`, `sent`, `paid`, `overdue`), issuer marking, tracking label | **Implemented** | "Tracking only; no payments are processed here" disclaimer, auto notification triggers |
+| **9. Calendar, Analytics, Reviews** | Content calendar CRUD, self-reported KPI entry (views, reach, clicks, engagement), 1-5 star mutual reviews | **Implemented** | Recharts bar charts, single review per collaboration participant, average ratings |
+| **10. AI Assistant** | 5 Gemini tools (recommendations, price estimates, pitch emails, analytics summary, content plan) | **Implemented** | Server-side Gemini API with MockProvider fallback, 10s timeout, "Demo mode" indicator |
+| **11. Role Dashboards & Admin** | Dedicated dashboards for all 4 roles; Admin panel (user search, suspend/reactivate, hide profiles) | **Implemented** | 100% real DB data, zero fake stats, admin-only routes with `authorize('admin')` |
+| **12. Resilience & Testing** | React ErrorBoundary, accessible 404 page, 126+ automated Vitest tests, Postman collection | **Implemented** | Strict Zod validation, operator injection prevention, complete test evidence |
 
+---
+
+## Security & Architectural Principles
+
+1. **Backend Role & Ownership Enforcement:**
+   - Client-side navigation guards provide user experience convenience only; every single API endpoint independently validates identity via `authenticate` and verifies roles/ownership via `authorize`.
+   - Suspended accounts are immediately rejected with HTTP 403 on all protected endpoints.
+
+2. **Strict Input Sanitization & Injection Defense:**
+   - Every request body is validated using Zod schemas with `.strict()`, rejecting unannounced fields (`user`, `_id`, `role`, etc.).
+   - Query parameters are explicitly coerced to primitives, blocking MongoDB operator injection attacks such as `?q[$ne]=test` (returns HTTP 400).
+   - Regex search terms are escaped to prevent catastrophic backtracking or arbitrary expression execution.
+
+3. **Secure File Storage & Private Delivery:**
+   - File uploads are validated by content magic numbers (file signature header analysis), not just client-supplied MIME types or extensions.
+   - Files are stored in an unexposed `uploads/` directory on disk using cryptographically secure random names.
+   - Files are served exclusively through authenticated, role-authorized streaming routes (`GET /api/submissions/:id/file`) verifying collaboration participation.
+
+4. **Production Stack Safety:**
+   - The central Express error handler hides stack traces in test and production environments (`NODE_ENV !== 'development'`), providing sanitized error messages.
+   - Passwords and sensitive secrets are never logged in console output, returned in API payloads, or committed to version control.
+
+5. **Honest Platform Boundaries:**
+   - **No Financial Escrow:** Payment functionality provides invoice status tracking only.
+   - **No Legal Verification Claims:** Agreement contracts and AI drafts display transparent disclaimers: *"Simple agreement record, not legal advice."*
+   - **Self-Reported Metrics:** All audience follower counts and campaign reach numbers are explicitly designated as self-reported data.
+
+---
+
+## Known Limitations
+
+- **Mock AI Mode:** When a valid `GEMINI_API_KEY` is not present in the server environment, the AI Assistant operates via a deterministic, in-memory `MockProvider` (highlighted by an honest "Demo Mode" badge in the UI).
+- **Polling vs WebSockets:** Real-time messaging and notifications utilize lightweight 10-second polling rather than persistent WebSocket connections, ensuring compatibility with standard serverless and containerized deployments without persistent socket overhead.
+- **Self-Reported Analytics:** Performance metrics (views, reach, clicks, engagement) are manually logged by creators rather than synchronized via live third-party platform OAuth APIs (YouTube Data API, Meta Graph API).
+- **Payment Processing:** CreatorOS tracks invoice statuses (`draft`, `sent`, `paid`, `overdue`) for project accounting; it does not process live credit card transactions, ACH payouts, or hold funds in escrow.

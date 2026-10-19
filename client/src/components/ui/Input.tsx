@@ -49,6 +49,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             type={type}
             disabled={disabled}
+            aria-invalid={error ? 'true' : undefined}
+            aria-describedby={
+              error
+                ? `${inputId}-error`
+                : helperText
+                ? `${inputId}-helper`
+                : undefined
+            }
             className={cn(
               'w-full rounded-xl border bg-white px-3.5 py-2 text-sm text-surface-900 transition-all duration-150',
               'placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-600',
@@ -70,9 +78,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
         {error ? (
-          <p className="text-xs text-rose-500 font-medium">{error}</p>
+          <p id={`${inputId}-error`} className="text-xs text-rose-500 font-medium">
+            {error}
+          </p>
         ) : helperText ? (
-          <p className="text-xs text-surface-500 dark:text-surface-400">{helperText}</p>
+          <p id={`${inputId}-helper`} className="text-xs text-surface-500 dark:text-surface-400">
+            {helperText}
+          </p>
         ) : null}
       </div>
     );

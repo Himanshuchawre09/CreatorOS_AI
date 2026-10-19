@@ -57,6 +57,10 @@ export const Modal: React.FC<ModalProps> = ({
 
       {/* Modal Dialog Content */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? 'modal-dialog-title' : undefined}
+        aria-describedby={description ? 'modal-dialog-description' : undefined}
         className={cn(
           'relative w-full rounded-2xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 shadow-2xl p-6 transition-all transform animate-in zoom-in-95',
           maxWidths[maxWidth]
@@ -65,12 +69,12 @@ export const Modal: React.FC<ModalProps> = ({
         <div className="flex items-start justify-between pb-3">
           <div>
             {title && (
-              <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">
+              <h3 id="modal-dialog-title" className="text-lg font-bold text-surface-900 dark:text-surface-100">
                 {title}
               </h3>
             )}
             {description && (
-              <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">
+              <p id="modal-dialog-description" className="text-sm text-surface-500 dark:text-surface-400 mt-1">
                 {description}
               </p>
             )}
