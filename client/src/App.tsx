@@ -20,6 +20,7 @@ import { BrandDetailPage } from './pages/BrandDetailPage';
 import { CampaignsPage } from './pages/CampaignsPage';
 import { CampaignFormPage } from './pages/CampaignFormPage';
 import { CampaignDetailPage } from './pages/CampaignDetailPage';
+import { RequestsPage } from './pages/RequestsPage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
 import { DevComponentsPage } from './pages/DevComponentsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -60,6 +61,7 @@ export const App: React.FC = () => {
                       <Route path="profile" element={<ProfilePage />} />
                       <Route path="creators/:id" element={<CreatorDetailPage />} />
                       <Route path="brands/:id" element={<BrandDetailPage />} />
+                      <Route path="requests" element={<RequestsPage />} />
                       <Route path="coming-soon" element={<ComingSoonPage />} />
                     </Route>
 
@@ -73,6 +75,7 @@ export const App: React.FC = () => {
                         <Route path="/brands/:id" element={<BrandDetailPage />} />
                         <Route path="/campaigns" element={<CampaignsPage />} />
                         <Route path="/campaigns/:id" element={<CampaignDetailPage />} />
+                        <Route path="/requests" element={<RequestsPage />} />
                       </Route>
 
                       {/* Campaign creation & editing for Brands */}

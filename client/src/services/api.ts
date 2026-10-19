@@ -152,6 +152,41 @@ export interface CampaignData {
   } | null;
 }
 
+export type RequestStatus = 'pending' | 'accepted' | 'rejected' | 'withdrawn';
+
+export interface CollaborationRequestData {
+  _id: string;
+  campaign: CampaignData;
+  brand: {
+    _id: string;
+    name: string;
+    orgName?: string;
+  };
+  creator: {
+    _id: string;
+    name: string;
+  };
+  sender: {
+    _id: string;
+    name: string;
+    role: string;
+    orgName?: string;
+  };
+  recipient: {
+    _id: string;
+    name: string;
+    role: string;
+    orgName?: string;
+  };
+  pitch?: string;
+  proposedRate?: number;
+  currency: string;
+  status: RequestStatus;
+  respondedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PaginationMeta {
   total: number;
   page: number;
@@ -305,5 +340,40 @@ export const api = {
   deleteCampaign: (id: string) =>
     fetchApi<void>(`/campaigns/${id}`, {
       method: 'DELETE',
+    }),
+
+  // Collaboration Requests
+  getRequests: (params?: Record<string, string | number | undefined>) => {
+    const query = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined && val !== '') {
+          query.set(key, String(val));
+        }
+      });
+    }
+    const qs = query.toString();
+    return fetchApi<CollaborationRequestData[]>(`/requests${qs ? `?${qs}` : ''}`);
+  },
+  getRequestById: (id: string) => fetchApi<CollaborationRequestData>(`/requests/${id}`),
+  createRequest: (data: {
+    campaignId: string;
+    recipientId: string;
+    pitch?: string;
+    proposedRate?: number;
+    currency?: string;
+  }) =>
+    fetchApi<CollaborationRequestData>('/requests', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  respondToRequest: (id: string, action: 'accept' | 'reject') =>
+    fetchApi<CollaborationRequestData>(`/requests/${id}/respond`, {
+      method: 'PUT',
+      body: JSON.stringify({ action }),
+    }),
+  withdrawRequest: (id: string) =>
+    fetchApi<CollaborationRequestData>(`/requests/${id}/withdraw`, {
+      method: 'PUT',
     }),
 };

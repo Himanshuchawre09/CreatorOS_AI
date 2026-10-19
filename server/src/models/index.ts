@@ -5,3 +5,4 @@ export * from './freelancerProfile.model';
 export * from './talentManagerProfile.model';
 export * from './portfolioItem.model';
 export * from './campaign.model';
+export * from './collaborationRequest.model';

@@ -12,16 +12,20 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { api, CreatorProfileData, PortfolioItemData } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
+import { SendRequestModal } from '../components/collaboration/SendRequestModal';
 
 export const CreatorDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const [creator, setCreator] = useState<CreatorProfileData | null>(null);
   const [portfolio, setPortfolio] = useState<PortfolioItemData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -152,18 +156,26 @@ export const CreatorDetailPage: React.FC = () => {
             </span>
           </div>
 
-          <Button
-            variant="primary"
-            size="md"
-            disabled
-            className="opacity-75 cursor-not-allowed"
-            leftIcon={<MessageSquare className="w-4 h-4" />}
-          >
-            <span>Send collaboration request</span>
-            <span className="ml-1 text-[10px] uppercase tracking-wider py-0.5 px-1.5 rounded bg-black/20 text-white font-bold">
-              Coming soon
-            </span>
-          </Button>
+          {user?.role === 'brand' ? (
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => setIsModalOpen(true)}
+              leftIcon={<MessageSquare className="w-4 h-4" />}
+            >
+              Send collaboration request
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="md"
+              disabled
+              className="opacity-60 cursor-not-allowed"
+              leftIcon={<MessageSquare className="w-4 h-4" />}
+            >
+              Brand Action
+            </Button>
+          )}
         </div>
       </div>
 
@@ -295,6 +307,15 @@ export const CreatorDetailPage: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Modal for sending request */}
+      {creator && (
+        <SendRequestModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          targetUser={{ _id: creator.user || id || '', name: creator.displayName }}
+        />
+      )}
     </div>
   );
 };

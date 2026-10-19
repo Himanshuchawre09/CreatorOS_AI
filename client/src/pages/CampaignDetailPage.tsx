@@ -17,6 +17,7 @@ import { useToast } from '../context/ToastContext';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
+import { SendRequestModal } from '../components/collaboration/SendRequestModal';
 
 const STATUS_VARIANTS: Record<CampaignStatus, 'default' | 'success' | 'warning' | 'danger' | 'accent'> = {
   draft: 'default',
@@ -43,6 +44,7 @@ export const CampaignDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -212,18 +214,14 @@ export const CampaignDetailPage: React.FC = () => {
                 </Button>
               )}
             </div>
-          ) : isCreator ? (
+          ) : isCreator && campaign.status === 'open' ? (
             <Button
               variant="primary"
               size="md"
-              disabled
-              className="opacity-75 cursor-not-allowed"
+              onClick={() => setIsApplyModalOpen(true)}
               leftIcon={<Send className="w-4 h-4" />}
             >
-              <span>Apply to Campaign</span>
-              <span className="ml-1 text-[10px] uppercase tracking-wider py-0.5 px-1.5 rounded bg-black/20 text-white font-bold">
-                Coming soon
-              </span>
+              Apply to Campaign
             </Button>
           ) : null}
         </div>
@@ -343,6 +341,15 @@ export const CampaignDetailPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Apply Modal for Creator */}
+      {campaign && (
+        <SendRequestModal
+          isOpen={isApplyModalOpen}
+          onClose={() => setIsApplyModalOpen(false)}
+          targetCampaign={campaign}
+        />
+      )}
     </div>
   );
 };
