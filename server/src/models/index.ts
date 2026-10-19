@@ -7,3 +7,4 @@ export * from './portfolioItem.model';
 export * from './campaign.model';
 export * from './collaborationRequest.model';
 export * from './contract.model';
+export * from './task.model';

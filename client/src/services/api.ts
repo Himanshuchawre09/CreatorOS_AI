@@ -234,6 +234,33 @@ export interface ContractData {
   updatedAt: string;
 }
 
+export type TaskStatus = 'todo' | 'doing' | 'review' | 'done';
+
+export interface TaskData {
+  _id: string;
+  collaborationRequest: string;
+  contract?: string;
+  title: string;
+  description?: string;
+  assignee: {
+    _id: string;
+    name: string;
+    email?: string;
+    role?: string;
+    orgName?: string;
+  };
+  creator: {
+    _id: string;
+    name: string;
+    role?: string;
+  };
+  dueDate?: string | null;
+  status: TaskStatus;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PaginationMeta {
   total: number;
   page: number;
@@ -464,5 +491,50 @@ export const api = {
     fetchApi<ContractData>(`/contracts/${id}/decline`, {
       method: 'PUT',
       body: JSON.stringify({ reason }),
+    }),
+
+  // Tasks / Workspace
+  getTasks: (params?: { collaborationId?: string; status?: string }) => {
+    const query = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined && val !== '') {
+          query.set(key, String(val));
+        }
+      });
+    }
+    const qs = query.toString();
+    return fetchApi<TaskData[]>(`/tasks${qs ? `?${qs}` : ''}`);
+  },
+  createTask: (data: {
+    collaborationId: string;
+    title: string;
+    description?: string;
+    assigneeId: string;
+    dueDate?: string;
+    status?: TaskStatus;
+  }) =>
+    fetchApi<TaskData>('/tasks', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  updateTask: (
+    id: string,
+    data: {
+      title?: string;
+      description?: string;
+      assigneeId?: string;
+      dueDate?: string | null;
+      status?: TaskStatus;
+      order?: number;
+    }
+  ) =>
+    fetchApi<TaskData>(`/tasks/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  deleteTask: (id: string) =>
+    fetchApi<void>(`/tasks/${id}`, {
+      method: 'DELETE',
     }),
 };
