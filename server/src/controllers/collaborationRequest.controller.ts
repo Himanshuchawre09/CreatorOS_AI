@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
-import { CollaborationRequest, Campaign, User } from '../models';
+import { CollaborationRequest, Campaign, User, Contract } from '../models';
 import { AppError } from '../utils/AppError';
 import {
   createRequestSchema,
@@ -256,6 +256,30 @@ export const respondToRequest = async (
     request.status = action === 'accept' ? 'accepted' : 'rejected';
     request.respondedAt = new Date();
     await request.save();
+
+    if (action === 'accept') {
+      const existingContract = await Contract.findOne({
+        collaborationRequest: request._id,
+      });
+
+      if (!existingContract) {
+        const campaign = await Campaign.findById(request.campaign);
+        if (campaign) {
+          await Contract.create({
+            collaborationRequest: request._id,
+            campaign: campaign._id,
+            brand: campaign.brand,
+            creator: request.creator,
+            deliverables: campaign.deliverables || [],
+            budget: campaign.budget,
+            currency: campaign.currency,
+            deadline: campaign.deadline,
+            notes: 'Standard collaboration agreement based on campaign brief.',
+            status: 'draft',
+          });
+        }
+      }
+    }
 
     res.status(200).json({
       success: true,

@@ -21,6 +21,8 @@ import { CampaignsPage } from './pages/CampaignsPage';
 import { CampaignFormPage } from './pages/CampaignFormPage';
 import { CampaignDetailPage } from './pages/CampaignDetailPage';
 import { RequestsPage } from './pages/RequestsPage';
+import { ContractsPage } from './pages/ContractsPage';
+import { ContractDetailPage } from './pages/ContractDetailPage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
 import { DevComponentsPage } from './pages/DevComponentsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -62,6 +64,8 @@ export const App: React.FC = () => {
                       <Route path="creators/:id" element={<CreatorDetailPage />} />
                       <Route path="brands/:id" element={<BrandDetailPage />} />
                       <Route path="requests" element={<RequestsPage />} />
+                      <Route path="contracts" element={<ContractsPage />} />
+                      <Route path="contracts/:id" element={<ContractDetailPage />} />
                       <Route path="coming-soon" element={<ComingSoonPage />} />
                     </Route>
 
@@ -76,6 +80,8 @@ export const App: React.FC = () => {
                         <Route path="/campaigns" element={<CampaignsPage />} />
                         <Route path="/campaigns/:id" element={<CampaignDetailPage />} />
                         <Route path="/requests" element={<RequestsPage />} />
+                        <Route path="/contracts" element={<ContractsPage />} />
+                        <Route path="/contracts/:id" element={<ContractDetailPage />} />
                       </Route>
 
                       {/* Campaign creation & editing for Brands */}

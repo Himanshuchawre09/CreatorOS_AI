@@ -187,6 +187,53 @@ export interface CollaborationRequestData {
   updatedAt: string;
 }
 
+export type ContractStatus = 'draft' | 'sent' | 'signed' | 'declined';
+
+export interface ContractData {
+  _id: string;
+  collaborationRequest:
+    | string
+    | {
+        _id: string;
+        pitch?: string;
+        proposedRate?: number;
+      };
+  campaign: {
+    _id: string;
+    title: string;
+    brief: string;
+    budget: number;
+    currency: string;
+    deadline: string;
+    status: string;
+    deliverables?: DeliverableData[];
+  };
+  brand: {
+    _id: string;
+    name: string;
+    email?: string;
+    orgName?: string;
+  };
+  creator: {
+    _id: string;
+    name: string;
+    email?: string;
+  };
+  deliverables: DeliverableData[];
+  budget: number;
+  currency: string;
+  deadline: string;
+  notes?: string;
+  status: ContractStatus;
+  brandSignedAt?: string | null;
+  creatorSignedAt?: string | null;
+  declinedAt?: string | null;
+  declinedBy?: string | null;
+  declineReason?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PaginationMeta {
   total: number;
   page: number;
@@ -375,5 +422,47 @@ export const api = {
   withdrawRequest: (id: string) =>
     fetchApi<CollaborationRequestData>(`/requests/${id}/withdraw`, {
       method: 'PUT',
+    }),
+
+  // Contracts
+  getContracts: (params?: Record<string, string | number | undefined>) => {
+    const query = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined && val !== '') {
+          query.set(key, String(val));
+        }
+      });
+    }
+    const qs = query.toString();
+    return fetchApi<ContractData[]>(`/contracts${qs ? `?${qs}` : ''}`);
+  },
+  getContractById: (id: string) => fetchApi<ContractData>(`/contracts/${id}`),
+  updateContract: (
+    id: string,
+    data: {
+      deliverables?: DeliverableData[];
+      budget?: number;
+      currency?: string;
+      deadline?: string;
+      notes?: string;
+    }
+  ) =>
+    fetchApi<ContractData>(`/contracts/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  sendContract: (id: string) =>
+    fetchApi<ContractData>(`/contracts/${id}/send`, {
+      method: 'PUT',
+    }),
+  signContract: (id: string) =>
+    fetchApi<ContractData>(`/contracts/${id}/sign`, {
+      method: 'PUT',
+    }),
+  declineContract: (id: string, reason?: string) =>
+    fetchApi<ContractData>(`/contracts/${id}/decline`, {
+      method: 'PUT',
+      body: JSON.stringify({ reason }),
     }),
 };
