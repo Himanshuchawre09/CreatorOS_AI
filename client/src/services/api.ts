@@ -797,6 +797,75 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify({ status }),
     }),
+
+  // Content Calendar Endpoints
+  getCalendarPosts: (params?: {
+    month?: number;
+    year?: number;
+    platform?: string;
+    status?: string;
+  }) => {
+    const query = new URLSearchParams();
+    if (params?.month) query.set('month', String(params.month));
+    if (params?.year) query.set('year', String(params.year));
+    if (params?.platform) query.set('platform', params.platform);
+    if (params?.status) query.set('status', params.status);
+    const qs = query.toString();
+    return fetchApi<CalendarPostItem[]>(`/calendar${qs ? `?${qs}` : ''}`);
+  },
+  createCalendarPost: (payload: {
+    title: string;
+    platform: string;
+    scheduledDate: string;
+    description?: string;
+    collaborationId?: string;
+    status?: string;
+  }) =>
+    fetchApi<CalendarPostItem>('/calendar', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  updateCalendarPost: (id: string, payload: Partial<CalendarPostItem>) =>
+    fetchApi<CalendarPostItem>(`/calendar/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+  deleteCalendarPost: (id: string) =>
+    fetchApi<void>(`/calendar/${id}`, {
+      method: 'DELETE',
+    }),
+
+  // Analytics Endpoints
+  getUserAnalytics: () => fetchApi<UserAnalyticsSummary>('/analytics'),
+  getCollaborationAnalytics: (collaborationId: string) =>
+    fetchApi<CollaborationAnalyticsItem>(`/analytics/${collaborationId}`),
+  upsertCollaborationAnalytics: (payload: {
+    collaborationId: string;
+    views: number;
+    reach: number;
+    clicks: number;
+    engagement: number;
+    notes?: string;
+  }) =>
+    fetchApi<CollaborationAnalyticsItem>('/analytics', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  // Reviews Endpoints
+  getUserReviews: (userId: string) =>
+    fetchApi<UserReviewsData>(`/reviews/user/${userId}`),
+  getCollaborationReviews: (collaborationId: string) =>
+    fetchApi<ReviewItem[]>(`/reviews/collaboration/${collaborationId}`),
+  createReview: (payload: {
+    collaborationId: string;
+    rating: number;
+    comment: string;
+  }) =>
+    fetchApi<ReviewItem>('/reviews', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
 };
 
 export interface AIStatusData {
@@ -952,6 +1021,72 @@ export interface CreateInvoicePayload {
   dueDate: string;
   notes?: string;
 }
+
+export interface CalendarPostItem {
+  _id: string;
+  owner: string;
+  collaborationRequest?: any;
+  title: string;
+  description?: string;
+  platform: 'youtube' | 'instagram' | 'tiktok' | 'twitch' | 'blog' | 'other';
+  scheduledDate: string;
+  status: 'draft' | 'scheduled' | 'published' | 'archived';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CollaborationAnalyticsItem {
+  _id?: string;
+  collaborationRequest: any;
+  creator: any;
+  brand: any;
+  views: number;
+  reach: number;
+  clicks: number;
+  engagement: number;
+  notes?: string;
+  lastReportedAt: string;
+}
+
+export interface UserAnalyticsSummary {
+  summary: {
+    totalViews: number;
+    totalReach: number;
+    totalClicks: number;
+    totalEngagement: number;
+  };
+  records: CollaborationAnalyticsItem[];
+  totalCollaborations: number;
+}
+
+export interface ReviewItem {
+  _id: string;
+  collaborationRequest: any;
+  reviewer: {
+    _id: string;
+    name: string;
+    role: string;
+    avatarUrl?: string;
+    orgName?: string;
+  };
+  reviewee: {
+    _id: string;
+    name: string;
+    role: string;
+    avatarUrl?: string;
+    orgName?: string;
+  };
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+export interface UserReviewsData {
+  reviews: ReviewItem[];
+  totalReviews: number;
+  averageRating: number;
+}
+
 
 
 

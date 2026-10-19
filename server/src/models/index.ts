@@ -13,3 +13,6 @@ export * from './talentLink.model';
 export * from './notification.model';
 export * from './message.model';
 export * from './invoice.model';
+export * from './calendarPost.model';
+export * from './collaborationAnalytics.model';
+export * from './review.model';

@@ -27,6 +27,9 @@ import { TasksPage } from './pages/TasksPage';
 import { ContentReviewPage } from './pages/ContentReviewPage';
 import { MessagesPage } from './pages/MessagesPage';
 import { InvoicesPage } from './pages/InvoicesPage';
+import { CalendarPage } from './pages/CalendarPage';
+import { AnalyticsPage } from './pages/AnalyticsPage';
+import { ReviewsPage } from './pages/ReviewsPage';
 import { AiAssistantPage } from './pages/AiAssistantPage';
 import { AdminPage } from './pages/AdminPage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
@@ -76,6 +79,9 @@ export const App: React.FC = () => {
                       <Route path="content-review" element={<ContentReviewPage />} />
                       <Route path="messages" element={<MessagesPage />} />
                       <Route path="invoices" element={<InvoicesPage />} />
+                      <Route path="calendar" element={<CalendarPage />} />
+                      <Route path="analytics" element={<AnalyticsPage />} />
+                      <Route path="reviews" element={<ReviewsPage />} />
                       <Route path="ai-assistant" element={<AiAssistantPage />} />
                       <Route path="coming-soon" element={<ComingSoonPage />} />
                     </Route>
@@ -97,6 +103,9 @@ export const App: React.FC = () => {
                         <Route path="/content-review" element={<ContentReviewPage />} />
                         <Route path="/messages" element={<MessagesPage />} />
                         <Route path="/invoices" element={<InvoicesPage />} />
+                        <Route path="/calendar" element={<CalendarPage />} />
+                        <Route path="/analytics" element={<AnalyticsPage />} />
+                        <Route path="/reviews" element={<ReviewsPage />} />
                         <Route path="/ai-assistant" element={<AiAssistantPage />} />
                       </Route>
 
