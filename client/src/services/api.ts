@@ -117,6 +117,41 @@ export interface PortfolioItemData {
   createdAt?: string;
 }
 
+export interface DeliverableData {
+  type: string;
+  count: number;
+  details?: string;
+}
+
+export type CampaignStatus = 'draft' | 'open' | 'inProgress' | 'completed' | 'cancelled';
+
+export interface CampaignData {
+  _id: string;
+  brand: {
+    _id: string;
+    name: string;
+    orgName?: string;
+  };
+  title: string;
+  brief: string;
+  goals: string[];
+  audience: string;
+  deliverables: DeliverableData[];
+  budget: number;
+  currency: string;
+  deadline: string;
+  status: CampaignStatus;
+  createdAt: string;
+  updatedAt: string;
+  brandProfile?: {
+    companyName: string;
+    industry: string;
+    website?: string;
+    about?: string;
+    logoUrl?: string;
+  } | null;
+}
+
 export interface PaginationMeta {
   total: number;
   page: number;
@@ -240,6 +275,35 @@ export const api = {
     }),
   deletePortfolioItem: (id: string) =>
     fetchApi<void>(`/portfolio/${id}`, {
+      method: 'DELETE',
+    }),
+
+  // Campaigns
+  getCampaigns: (params?: Record<string, string | number | undefined>) => {
+    const query = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined && val !== '') {
+          query.set(key, String(val));
+        }
+      });
+    }
+    const qs = query.toString();
+    return fetchApi<CampaignData[]>(`/campaigns${qs ? `?${qs}` : ''}`);
+  },
+  getCampaignById: (id: string) => fetchApi<CampaignData>(`/campaigns/${id}`),
+  createCampaign: (data: any) =>
+    fetchApi<CampaignData>('/campaigns', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  updateCampaign: (id: string, data: any) =>
+    fetchApi<CampaignData>(`/campaigns/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  deleteCampaign: (id: string) =>
+    fetchApi<void>(`/campaigns/${id}`, {
       method: 'DELETE',
     }),
 };

@@ -17,6 +17,9 @@ import { ProfilePage } from './pages/ProfilePage';
 import { DiscoverPage } from './pages/DiscoverPage';
 import { CreatorDetailPage } from './pages/CreatorDetailPage';
 import { BrandDetailPage } from './pages/BrandDetailPage';
+import { CampaignsPage } from './pages/CampaignsPage';
+import { CampaignFormPage } from './pages/CampaignFormPage';
+import { CampaignDetailPage } from './pages/CampaignDetailPage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
 import { DevComponentsPage } from './pages/DevComponentsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -68,6 +71,14 @@ export const App: React.FC = () => {
                         <Route path="/discover" element={<DiscoverPage />} />
                         <Route path="/creators/:id" element={<CreatorDetailPage />} />
                         <Route path="/brands/:id" element={<BrandDetailPage />} />
+                        <Route path="/campaigns" element={<CampaignsPage />} />
+                        <Route path="/campaigns/:id" element={<CampaignDetailPage />} />
+                      </Route>
+
+                      {/* Campaign creation & editing for Brands */}
+                      <Route element={<RoleRoute allowedRoles={['brand']} />}>
+                        <Route path="/campaigns/new" element={<CampaignFormPage />} />
+                        <Route path="/campaigns/:id/edit" element={<CampaignFormPage />} />
                       </Route>
 
                       {/* Profile management role-guarded */}
