@@ -10,6 +10,7 @@ import campaignRoutes from './campaign.routes';
 import collaborationRequestRoutes from './collaborationRequest.routes';
 import contractRoutes from './contract.routes';
 import taskRoutes from './task.routes';
+import submissionRoutes from './submission.routes';
 
 const apiRouter = Router();
 
@@ -25,6 +26,7 @@ apiRouter.use('/collaboration-requests', collaborationRequestRoutes);
 apiRouter.use('/requests', collaborationRequestRoutes);
 apiRouter.use('/contracts', contractRoutes);
 apiRouter.use('/tasks', taskRoutes);
+apiRouter.use('/submissions', submissionRoutes);
 apiRouter.use('/', healthRoutes);
 
 export default apiRouter;

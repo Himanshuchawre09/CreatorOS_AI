@@ -261,6 +261,56 @@ export interface TaskData {
   updatedAt: string;
 }
 
+export type SubmissionStatus = 'pending' | 'approved' | 'changesRequested';
+
+export interface SubmissionRevisionData {
+  version: number;
+  file: {
+    filename: string;
+    originalName: string;
+    mimeType: string;
+    size: number;
+    path: string;
+  };
+  status: SubmissionStatus;
+  feedback?: string;
+  feedbackAt?: string;
+  submittedAt: string;
+}
+
+export interface SubmissionData {
+  _id: string;
+  collaborationRequest: string;
+  contract?: string;
+  creator: {
+    _id: string;
+    name: string;
+    email?: string;
+  };
+  brand: {
+    _id: string;
+    name: string;
+    email?: string;
+    orgName?: string;
+  };
+  title: string;
+  description?: string;
+  version: number;
+  file: {
+    filename: string;
+    originalName: string;
+    mimeType: string;
+    size: number;
+    path: string;
+  };
+  status: SubmissionStatus;
+  feedback?: string;
+  feedbackAt?: string;
+  revisions: SubmissionRevisionData[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PaginationMeta {
   total: number;
   page: number;
@@ -292,12 +342,16 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
     ? endpoint
     : `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
+  const isFormData = typeof FormData !== 'undefined' && options?.body instanceof FormData;
+
+  const headers: Record<string, string> = {
+    ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
+    ...(options?.headers as Record<string, string>),
+  };
+
   const response = await fetch(url, {
     credentials: 'include', // Always send and receive cookies with API calls
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
+    headers,
     ...options,
   });
 
@@ -537,4 +591,41 @@ export const api = {
     fetchApi<void>(`/tasks/${id}`, {
       method: 'DELETE',
     }),
+
+  // Content Submissions & Review
+  getSubmissions: (params?: { collaborationId?: string; status?: string }) => {
+    const query = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, val]) => {
+        if (val !== undefined && val !== '') {
+          query.set(key, String(val));
+        }
+      });
+    }
+    const qs = query.toString();
+    return fetchApi<SubmissionData[]>(`/submissions${qs ? `?${qs}` : ''}`);
+  },
+  getSubmissionById: (id: string) => fetchApi<SubmissionData>(`/submissions/${id}`),
+  createSubmission: (formData: FormData) =>
+    fetchApi<SubmissionData>('/submissions', {
+      method: 'POST',
+      body: formData,
+    }),
+  submitRevision: (id: string, formData: FormData) =>
+    fetchApi<SubmissionData>(`/submissions/${id}/revision`, {
+      method: 'POST',
+      body: formData,
+    }),
+  reviewSubmission: (
+    id: string,
+    data: { action: 'approve' | 'requestChanges'; comment?: string }
+  ) =>
+    fetchApi<SubmissionData>(`/submissions/${id}/review`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  getDownloadFileUrl: (id: string, version?: number) => {
+    const base = `${API_BASE_URL}/submissions/${id}/file`;
+    return version ? `${base}?version=${version}` : base;
+  },
 };

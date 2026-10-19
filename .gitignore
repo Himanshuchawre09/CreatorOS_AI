@@ -9,6 +9,8 @@ dist/
 dist-ssr/
 build/
 *.local
+uploads/
+server/uploads/
 
 # Logs
 npm-debug.log*
