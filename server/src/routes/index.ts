@@ -14,6 +14,8 @@ import submissionRoutes from './submission.routes';
 import aiRoutes from './ai.routes';
 import dashboardRoutes from './dashboard.routes';
 import talentLinkRoutes from './talentLink.routes';
+import notificationRoutes from './notification.routes';
+import messageRoutes from './message.routes';
 
 const apiRouter = Router();
 
@@ -33,6 +35,8 @@ apiRouter.use('/submissions', submissionRoutes);
 apiRouter.use('/ai', aiRoutes);
 apiRouter.use('/dashboard', dashboardRoutes);
 apiRouter.use('/talent-links', talentLinkRoutes);
+apiRouter.use('/notifications', notificationRoutes);
+apiRouter.use('/messages', messageRoutes);
 apiRouter.use('/', healthRoutes);
 
 export default apiRouter;

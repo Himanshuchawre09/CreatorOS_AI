@@ -7,6 +7,7 @@ import {
   declineContractSchema,
   contractQuerySchema,
 } from '../validations/contract.validation';
+import { sendNotification } from '../utils/notification';
 
 export const getContracts = async (
   req: Request,
@@ -286,6 +287,16 @@ export const signContract = async (
     }
 
     await contract.save();
+
+    const otherPartyId = isBrand ? contract.creator : contract.brand;
+    await sendNotification({
+      recipient: otherPartyId,
+      sender: req.user._id,
+      type: 'contract_signed',
+      title: contract.status === 'signed' ? 'Contract Fully Executed' : 'Contract Signed by Counterparty',
+      message: `${req.user.name} signed the collaboration contract`,
+      link: `/contracts/${contract._id}`,
+    });
 
     res.status(200).json({
       success: true,

@@ -25,6 +25,7 @@ import { ContractsPage } from './pages/ContractsPage';
 import { ContractDetailPage } from './pages/ContractDetailPage';
 import { TasksPage } from './pages/TasksPage';
 import { ContentReviewPage } from './pages/ContentReviewPage';
+import { MessagesPage } from './pages/MessagesPage';
 import { AiAssistantPage } from './pages/AiAssistantPage';
 import { AdminPage } from './pages/AdminPage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
@@ -72,6 +73,7 @@ export const App: React.FC = () => {
                       <Route path="contracts/:id" element={<ContractDetailPage />} />
                       <Route path="tasks" element={<TasksPage />} />
                       <Route path="content-review" element={<ContentReviewPage />} />
+                      <Route path="messages" element={<MessagesPage />} />
                       <Route path="ai-assistant" element={<AiAssistantPage />} />
                       <Route path="coming-soon" element={<ComingSoonPage />} />
                     </Route>
@@ -91,6 +93,7 @@ export const App: React.FC = () => {
                         <Route path="/contracts/:id" element={<ContractDetailPage />} />
                         <Route path="/tasks" element={<TasksPage />} />
                         <Route path="/content-review" element={<ContentReviewPage />} />
+                        <Route path="/messages" element={<MessagesPage />} />
                         <Route path="/ai-assistant" element={<AiAssistantPage />} />
                       </Route>
 

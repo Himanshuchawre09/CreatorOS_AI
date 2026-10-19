@@ -18,6 +18,7 @@ export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   user?: User;
+  unreadCount?: number;
   profile?: any;
   creator?: CreatorProfileData;
   brand?: BrandProfileData;
@@ -739,6 +740,36 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify({ isPublic }),
     }),
+
+  // Notification Endpoints
+  getNotifications: (params?: { page?: number; limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.page) query.set('page', String(params.page));
+    if (params?.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return fetchApi<NotificationItem[]>(`/notifications${qs ? `?${qs}` : ''}`);
+  },
+  markNotificationAsRead: (id: string) =>
+    fetchApi<NotificationItem>(`/notifications/${id}/read`, {
+      method: 'PUT',
+    }),
+  markAllNotificationsAsRead: () =>
+    fetchApi<{ count: number }>(`/notifications/mark-all-read`, {
+      method: 'PUT',
+    }),
+
+  // Messaging Endpoints
+  getConversations: () => fetchApi<ConversationItem[]>('/messages/conversations'),
+  getMessages: (collaborationId: string, limit?: number) => {
+    const query = new URLSearchParams({ collaborationId });
+    if (limit) query.set('limit', String(limit));
+    return fetchApi<MessageItem[]>(`/messages?${query.toString()}`);
+  },
+  sendMessage: (collaborationId: string, content: string) =>
+    fetchApi<MessageItem>('/messages', {
+      method: 'POST',
+      body: JSON.stringify({ collaborationId, content }),
+    }),
 };
 
 export interface AIStatusData {
@@ -802,4 +833,56 @@ export interface AIContentPlanResponse {
   ideas: AIContentIdea[];
   isMock: boolean;
 }
+
+export interface NotificationItem {
+  _id: string;
+  recipient: string;
+  sender?: {
+    _id: string;
+    name: string;
+    avatarUrl?: string;
+  };
+  type: string;
+  title: string;
+  message: string;
+  link?: string;
+  read: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MessageItem {
+  _id: string;
+  collaborationRequest: string;
+  sender: {
+    _id: string;
+    name: string;
+    avatarUrl?: string;
+  };
+  content: string;
+  read: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ConversationItem {
+  collaborationId: string;
+  campaign?: {
+    _id: string;
+    title: string;
+    budget?: number;
+    deliverables?: string[];
+  };
+  status: string;
+  partner?: {
+    _id: string;
+    name: string;
+    avatarUrl?: string;
+    orgName?: string;
+  };
+  lastMessage?: MessageItem;
+  unreadCount: number;
+  updatedAt: string;
+}
+
 

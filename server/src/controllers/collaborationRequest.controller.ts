@@ -7,6 +7,7 @@ import {
   respondRequestSchema,
   requestQuerySchema,
 } from '../validations/collaborationRequest.validation';
+import { sendNotification } from '../utils/notification';
 
 export const createCollaborationRequest = async (
   req: Request,
@@ -98,6 +99,15 @@ export const createCollaborationRequest = async (
       proposedRate,
       currency,
       status: 'pending',
+    });
+
+    await sendNotification({
+      recipient: recipientId,
+      sender: req.user._id,
+      type: 'request_received',
+      title: 'New Collaboration Request',
+      message: `${req.user.name} sent you a collaboration request for "${campaign.title}"`,
+      link: '/requests',
     });
 
     res.status(201).json({
@@ -280,6 +290,15 @@ export const respondToRequest = async (
         }
       }
     }
+
+    await sendNotification({
+      recipient: request.sender,
+      sender: req.user._id,
+      type: action === 'accept' ? 'request_accepted' : 'request_rejected',
+      title: `Collaboration Request ${action === 'accept' ? 'Accepted' : 'Declined'}`,
+      message: `${req.user.name} has ${action === 'accept' ? 'accepted' : 'declined'} your collaboration request`,
+      link: '/requests',
+    });
 
     res.status(200).json({
       success: true,

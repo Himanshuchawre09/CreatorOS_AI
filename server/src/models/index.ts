@@ -10,3 +10,5 @@ export * from './contract.model';
 export * from './task.model';
 export * from './submission.model';
 export * from './talentLink.model';
+export * from './notification.model';
+export * from './message.model';

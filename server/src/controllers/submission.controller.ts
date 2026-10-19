@@ -9,6 +9,7 @@ import {
   reviewSubmissionSchema,
   submissionQuerySchema,
 } from '../validations/submission.validation';
+import { sendNotification } from '../utils/notification';
 
 // Helper to resolve collaboration and participant IDs
 async function getCollaborationInfo(collaborationId: string): Promise<{
@@ -117,6 +118,15 @@ export const createSubmission = async (
       .populate('creator', 'name email')
       .populate('brand', 'name email orgName');
 
+    await sendNotification({
+      recipient: brandId,
+      sender: req.user._id,
+      type: 'content_submitted',
+      title: 'Content Submitted for Review',
+      message: `${req.user.name} submitted deliverable: "${title}"`,
+      link: '/content-review',
+    });
+
     res.status(201).json({
       success: true,
       data: populated,
@@ -213,6 +223,15 @@ export const submitRevision = async (
       .populate('creator', 'name email')
       .populate('brand', 'name email orgName');
 
+    await sendNotification({
+      recipient: submission.brand,
+      sender: req.user._id,
+      type: 'content_submitted',
+      title: 'Revision Submitted for Review',
+      message: `${req.user.name} submitted revision (v${submission.version}) for deliverable: "${submission.title}"`,
+      link: '/content-review',
+    });
+
     res.status(200).json({
       success: true,
       data: populated,
@@ -274,6 +293,18 @@ export const reviewSubmission = async (
     const populated = await Submission.findById(submission._id)
       .populate('creator', 'name email')
       .populate('brand', 'name email orgName');
+
+    await sendNotification({
+      recipient: submission.creator,
+      sender: req.user._id,
+      type: action === 'approve' ? 'content_approved' : 'changes_requested',
+      title: action === 'approve' ? 'Content Approved' : 'Changes Requested',
+      message:
+        action === 'approve'
+          ? `${req.user.name} approved your deliverable: "${submission.title}"`
+          : `${req.user.name} requested changes on your deliverable: "${submission.title}"`,
+      link: '/content-review',
+    });
 
     res.status(200).json({
       success: true,

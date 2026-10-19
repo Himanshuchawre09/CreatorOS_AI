@@ -2,9 +2,10 @@ import React from 'react';
 import { Menu, Search, Bell, ExternalLink, LogOut } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { Avatar } from '../ui/Avatar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ROLE_LABELS } from '../../config/navigation';
+import { api } from '../../services/api';
 
 export interface TopBarProps {
   onOpenMobileNav: () => void;
@@ -18,6 +19,77 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileNav }) => {
 
   const handleLogout = async () => {
     await logout();
+  };
+
+  const [showNotifications, setShowNotifications] = React.useState(false);
+  const [notifications, setNotifications] = React.useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = React.useState<number>(0);
+  const notificationRef = React.useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  const fetchNotifications = React.useCallback(async () => {
+    if (!user) return;
+    try {
+      const res = await api.getNotifications({ limit: 8 });
+      if (res.success && res.data) {
+        setNotifications(res.data);
+        setUnreadCount(res.unreadCount || 0);
+      }
+    } catch {
+      // Ignore polling errors silently
+    }
+  }, [user]);
+
+  React.useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 15000);
+    return () => clearInterval(interval);
+  }, [fetchNotifications]);
+
+  // Click outside listener for notification dropdown
+  React.useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(e.target as Node)
+      ) {
+        setShowNotifications(false);
+      }
+    };
+    if (showNotifications) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showNotifications]);
+
+  const handleMarkAllRead = async () => {
+    try {
+      await api.markAllNotificationsAsRead();
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      setUnreadCount(0);
+    } catch {
+      // Ignore error
+    }
+  };
+
+  const handleNotificationClick = async (notif: any) => {
+    if (!notif.read) {
+      try {
+        await api.markNotificationAsRead(notif._id);
+        setNotifications((prev) =>
+          prev.map((n) => (n._id === notif._id ? { ...n, read: true } : n))
+        );
+        setUnreadCount((c) => Math.max(0, c - 1));
+      } catch {
+        // Ignore error
+      }
+    }
+    setShowNotifications(false);
+    if (notif.link) {
+      navigate(notif.link);
+    }
   };
 
   return (
@@ -70,14 +142,94 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileNav }) => {
         {/* Theme Toggle */}
         <ThemeToggle />
 
-        {/* Notification Bell */}
-        <button
-          aria-label="Notifications"
-          className="relative p-2 rounded-xl text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
-        >
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-accent-500 ring-2 ring-white dark:ring-surface-950" />
-        </button>
+        {/* Notification Bell & Dropdown */}
+        <div className="relative" ref={notificationRef}>
+          <button
+            onClick={() => setShowNotifications(!showNotifications)}
+            aria-label="Notifications"
+            className="relative p-2 rounded-xl text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+          >
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] flex items-center justify-center px-1 text-[10px] font-bold text-white bg-accent-500 rounded-full ring-2 ring-white dark:ring-surface-950">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </button>
+
+          {showNotifications && (
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+              <div className="p-3.5 border-b border-surface-200 dark:border-surface-800 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-surface-900 dark:text-surface-100">
+                    Notifications
+                  </h3>
+                  {unreadCount > 0 && (
+                    <span className="text-[11px] font-semibold px-2 py-0.5 bg-accent-100 dark:bg-accent-950/50 text-accent-700 dark:text-accent-300 rounded-full">
+                      {unreadCount} new
+                    </span>
+                  )}
+                </div>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={handleMarkAllRead}
+                    className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline"
+                  >
+                    Mark all read
+                  </button>
+                )}
+              </div>
+
+              <div className="max-h-80 overflow-y-auto divide-y divide-surface-100 dark:divide-surface-800/60">
+                {notifications.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-surface-500 dark:text-surface-400">
+                    No notifications yet.
+                  </div>
+                ) : (
+                  notifications.map((notif) => (
+                    <div
+                      key={notif._id}
+                      onClick={() => handleNotificationClick(notif)}
+                      className={`p-3.5 hover:bg-surface-50 dark:hover:bg-surface-800/50 cursor-pointer transition-colors ${
+                        !notif.read ? 'bg-brand-50/40 dark:bg-brand-950/20' : ''
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <span className="text-xs font-bold text-surface-900 dark:text-surface-100 line-clamp-1">
+                          {notif.title}
+                        </span>
+                        {!notif.read && (
+                          <span className="w-2 h-2 rounded-full bg-accent-500 shrink-0 mt-1" />
+                        )}
+                      </div>
+                      <p className="text-xs text-surface-600 dark:text-surface-300 line-clamp-2">
+                        {notif.message}
+                      </p>
+                      <span className="text-[10px] text-surface-400 mt-1 block">
+                        {new Date(notif.createdAt).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="p-2.5 border-t border-surface-200 dark:border-surface-800 bg-surface-50/50 dark:bg-surface-950/50 text-center">
+                <Link
+                  to="/messages"
+                  onClick={() => setShowNotifications(false)}
+                  className="text-xs font-medium text-surface-600 dark:text-surface-300 hover:text-brand-600 dark:hover:text-brand-400"
+                >
+                  Go to Messages →
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* User Profile Preview with dynamic role */}
         <div className="flex items-center gap-2.5 pl-2 border-l border-surface-200 dark:border-surface-800">
