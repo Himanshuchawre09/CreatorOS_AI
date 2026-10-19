@@ -628,4 +628,126 @@ export const api = {
     const base = `${API_BASE_URL}/submissions/${id}/file`;
     return version ? `${base}?version=${version}` : base;
   },
+
+  // AI Assistant Endpoints
+  getAiStatus: () => fetchApi<AIStatusData>('/ai/status'),
+  getAiRecommendations: (payload: {
+    target?: 'creators' | 'campaigns' | 'brands';
+    niche?: string;
+    goal?: string;
+    campaignId?: string;
+  }) =>
+    fetchApi<AIRecommendationResponse>('/ai/recommend', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  getAiPriceEstimate: (payload: {
+    platform: string;
+    contentType: string;
+    followers?: number;
+    engagementRate?: number;
+    deliverablesSummary?: string;
+  }) =>
+    fetchApi<AIPriceEstimateResponse>('/ai/price-estimate', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  getAiEmailDraft: (payload: {
+    recipientName: string;
+    recipientType: string;
+    campaignGoal: string;
+    tone?: string;
+    customNotes?: string;
+  }) =>
+    fetchApi<AIEmailDraftResponse>('/ai/email-draft', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  getAiAnalyticsSummary: (payload: {
+    metrics?: {
+      views?: number;
+      reach?: number;
+      clicks?: number;
+      engagementRate?: number;
+      conversions?: number;
+    };
+    campaignContext?: string;
+  }) =>
+    fetchApi<AIAnalyticsSummaryResponse>('/ai/analytics-summary', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  getAiContentPlan: (payload: {
+    niche: string;
+    goal: string;
+    platform?: string;
+    timeframeWeeks?: number;
+  }) =>
+    fetchApi<AIContentPlanResponse>('/ai/content-plan', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
 };
+
+export interface AIStatusData {
+  isMock: boolean;
+  provider: string;
+}
+
+export interface AIRecommendationItem {
+  candidateId: string;
+  matchScore: number;
+  reason: string;
+  pitchAngle?: string;
+  displayName: string;
+  niche: string;
+  avatarUrl?: string;
+  budget?: number;
+  platforms?: PlatformItem[];
+}
+
+export interface AIRecommendationResponse {
+  recommendations: AIRecommendationItem[];
+  message?: string;
+  isMock: boolean;
+}
+
+export interface AIPriceEstimateResponse {
+  minPrice: number;
+  maxPrice: number;
+  currency: string;
+  reasoning: string;
+  disclaimer: 'estimate';
+  isMock: boolean;
+}
+
+export interface AIEmailDraftResponse {
+  subject: string;
+  body: string;
+  isMock: boolean;
+}
+
+export interface AIAnalyticsSummaryResponse {
+  summary: string;
+  hasData: boolean;
+  insights: string[];
+  isMock: boolean;
+}
+
+export interface AIContentIdea {
+  title: string;
+  hook: string;
+  suggestedCaption: string;
+  hashtags: string[];
+  format: string;
+}
+
+export interface AIContentPlanResponse {
+  niche: string;
+  goal: string;
+  platform: string;
+  timeframeWeeks: number;
+  ideas: AIContentIdea[];
+  isMock: boolean;
+}
+

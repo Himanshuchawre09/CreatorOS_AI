@@ -11,6 +11,7 @@ import collaborationRequestRoutes from './collaborationRequest.routes';
 import contractRoutes from './contract.routes';
 import taskRoutes from './task.routes';
 import submissionRoutes from './submission.routes';
+import aiRoutes from './ai.routes';
 
 const apiRouter = Router();
 
@@ -27,6 +28,7 @@ apiRouter.use('/requests', collaborationRequestRoutes);
 apiRouter.use('/contracts', contractRoutes);
 apiRouter.use('/tasks', taskRoutes);
 apiRouter.use('/submissions', submissionRoutes);
+apiRouter.use('/ai', aiRoutes);
 apiRouter.use('/', healthRoutes);
 
 export default apiRouter;

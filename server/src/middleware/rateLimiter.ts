@@ -12,3 +12,15 @@ export const authRateLimiter = rateLimit({
   },
 });
 
+export const aiRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes window
+  max: env.NODE_ENV === 'test' ? 1000 : 30, // 30 AI requests per 15 minutes in non-test
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many AI requests. Please try again later.',
+  },
+});
+
+

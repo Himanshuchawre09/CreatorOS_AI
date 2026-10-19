@@ -51,7 +51,7 @@ const talentManagerNav: NavItemConfig[] = [
   { label: 'Calendar', path: '/coming-soon?feature=Calendar', icon: Calendar, badge: 'Soon', isSoon: true },
   { label: 'Analytics', path: '/coming-soon?feature=Analytics', icon: BarChart3, badge: 'Soon', isSoon: true },
   { label: 'Reviews', path: '/coming-soon?feature=Reviews', icon: Star, badge: 'Soon', isSoon: true },
-  { label: 'AI Assistant', path: '/coming-soon?feature=AI+Assistant', icon: Sparkles, badge: 'Soon', isSoon: true },
+  { label: 'AI Assistant', path: '/ai-assistant', icon: Sparkles },
   { label: 'Settings', path: '/coming-soon?feature=Settings', icon: Settings, badge: 'Soon', isSoon: true },
 ];
 
@@ -70,7 +70,7 @@ export const ROLE_NAVIGATION: Record<string, NavItemConfig[]> = {
     { label: 'Calendar', path: '/coming-soon?feature=Calendar', icon: Calendar, badge: 'Soon', isSoon: true },
     { label: 'Analytics', path: '/coming-soon?feature=Analytics', icon: BarChart3, badge: 'Soon', isSoon: true },
     { label: 'Reviews', path: '/coming-soon?feature=Reviews', icon: Star, badge: 'Soon', isSoon: true },
-    { label: 'AI Assistant', path: '/coming-soon?feature=AI+Assistant', icon: Sparkles, badge: 'Soon', isSoon: true },
+    { label: 'AI Assistant', path: '/ai-assistant', icon: Sparkles },
     { label: 'Settings', path: '/coming-soon?feature=Settings', icon: Settings, badge: 'Soon', isSoon: true },
   ],
   brand: [
@@ -87,7 +87,7 @@ export const ROLE_NAVIGATION: Record<string, NavItemConfig[]> = {
     { label: 'Calendar', path: '/coming-soon?feature=Calendar', icon: Calendar, badge: 'Soon', isSoon: true },
     { label: 'Analytics', path: '/coming-soon?feature=Analytics', icon: BarChart3, badge: 'Soon', isSoon: true },
     { label: 'Reviews', path: '/coming-soon?feature=Reviews', icon: Star, badge: 'Soon', isSoon: true },
-    { label: 'AI Assistant', path: '/coming-soon?feature=AI+Assistant', icon: Sparkles, badge: 'Soon', isSoon: true },
+    { label: 'AI Assistant', path: '/ai-assistant', icon: Sparkles },
     { label: 'Settings', path: '/coming-soon?feature=Settings', icon: Settings, badge: 'Soon', isSoon: true },
   ],
   freelancer: [
@@ -100,7 +100,7 @@ export const ROLE_NAVIGATION: Record<string, NavItemConfig[]> = {
     { label: 'Invoices & Payments', path: '/coming-soon?feature=Invoices+%26+Payments', icon: Receipt, badge: 'Soon', isSoon: true },
     { label: 'Messages', path: '/coming-soon?feature=Messages', icon: MessageSquare, badge: 'Soon', isSoon: true },
     { label: 'Calendar', path: '/coming-soon?feature=Calendar', icon: Calendar, badge: 'Soon', isSoon: true },
-    { label: 'AI Assistant', path: '/coming-soon?feature=AI+Assistant', icon: Sparkles, badge: 'Soon', isSoon: true },
+    { label: 'AI Assistant', path: '/ai-assistant', icon: Sparkles },
     { label: 'Settings', path: '/coming-soon?feature=Settings', icon: Settings, badge: 'Soon', isSoon: true },
   ],
   talentManager: talentManagerNav,

@@ -25,6 +25,7 @@ import { ContractsPage } from './pages/ContractsPage';
 import { ContractDetailPage } from './pages/ContractDetailPage';
 import { TasksPage } from './pages/TasksPage';
 import { ContentReviewPage } from './pages/ContentReviewPage';
+import { AiAssistantPage } from './pages/AiAssistantPage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
 import { DevComponentsPage } from './pages/DevComponentsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -70,6 +71,7 @@ export const App: React.FC = () => {
                       <Route path="contracts/:id" element={<ContractDetailPage />} />
                       <Route path="tasks" element={<TasksPage />} />
                       <Route path="content-review" element={<ContentReviewPage />} />
+                      <Route path="ai-assistant" element={<AiAssistantPage />} />
                       <Route path="coming-soon" element={<ComingSoonPage />} />
                     </Route>
 
@@ -88,6 +90,7 @@ export const App: React.FC = () => {
                         <Route path="/contracts/:id" element={<ContractDetailPage />} />
                         <Route path="/tasks" element={<TasksPage />} />
                         <Route path="/content-review" element={<ContentReviewPage />} />
+                        <Route path="/ai-assistant" element={<AiAssistantPage />} />
                       </Route>
 
                       {/* Campaign creation & editing for Brands */}
