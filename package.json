@@ -19,6 +19,7 @@
     "install:all": "npm install && npm --prefix server install && npm --prefix client install"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "puppeteer": "^25.14.0"
   }
 }

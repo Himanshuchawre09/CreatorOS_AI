@@ -590,23 +590,23 @@ const seedDemo = async (): Promise<void> => {
 
     // 17. Messages between Brand and Creator
     await Message.findOneAndUpdate(
-      { collaborationRequest: request1._id, text: 'Hi Sarah! Contract is countersigned. Really excited to collaborate on this!' },
+      { collaborationRequest: request1._id, content: 'Hi Sarah! Contract is countersigned. Really excited to collaborate on this!' },
       {
         collaborationRequest: request1._id,
         sender: brand1._id,
-        recipient: creator1._id,
-        text: 'Hi Sarah! Contract is countersigned. Really excited to collaborate on this!',
+        content: 'Hi Sarah! Contract is countersigned. Really excited to collaborate on this!',
+        read: true,
       },
       { upsert: true, new: true }
     );
 
     await Message.findOneAndUpdate(
-      { collaborationRequest: request1._id, text: 'Thanks Pulse team! The sample unit arrived yesterday. Acoustic testing looks great.' },
+      { collaborationRequest: request1._id, content: 'Thanks Pulse team! The sample unit arrived yesterday. Acoustic testing looks great.' },
       {
         collaborationRequest: request1._id,
         sender: creator1._id,
-        recipient: brand1._id,
-        text: 'Thanks Pulse team! The sample unit arrived yesterday. Acoustic testing looks great.',
+        content: 'Thanks Pulse team! The sample unit arrived yesterday. Acoustic testing looks great.',
+        read: false,
       },
       { upsert: true, new: true }
     );
